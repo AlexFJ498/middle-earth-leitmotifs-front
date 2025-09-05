@@ -1,7 +1,7 @@
-import { LeitmotifsList } from "./sections/LeitmotifsList/LeitmotifsList";
+import { ThemesList } from "./sections/ThemesList/ThemesList";
 
 
 export function App() {
 
-	return <LeitmotifsList />;
+	return <ThemesList />;
 }
