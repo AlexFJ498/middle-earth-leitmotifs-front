@@ -2,7 +2,45 @@ import React, { useEffect, useState } from "react";
 import { ThemesResponses } from "../../infrastructure/ApiResponse";
 import { ApiThemeRepository } from "../../infrastructure/ApiThemeRepository";
 
-const repository = new ApiThemeRepository();
+export function ThemesList({ repository }: { readonly repository: ApiThemeRepository }) {
+    const [themes, setThemes] = useState<ThemesResponses[]>([]);
+
+    useEffect(() => {
+        repository.searchAll().then((data) => {
+            setThemes(data);
+        });
+    }, []);
+
+    // Group themes by group
+    const groupedThemes = themes.reduce((acc, theme) => {
+        const groupName = theme.group?.name || "Sin grupo";
+        if (!acc[groupName]) acc[groupName] = [];
+        acc[groupName].push(theme);
+        return acc;
+    }, {} as Record<string, ThemesResponses[]>);
+
+    // Split groups into two columns
+    const groupEntries = Object.entries(groupedThemes);
+    const mid = Math.ceil(groupEntries.length / 2);
+    const columns = [groupEntries.slice(0, mid), groupEntries.slice(mid)];
+
+    return (
+        <>
+            <h1>Themes List</h1>
+            <div style={{ border: "1px solid #ccc", borderRadius: "12px", padding: "2rem", background: "#f5f5f5", marginTop: "2rem" }}>
+                <div style={{ display: "flex", gap: "2rem" }}>
+                    {columns.map((column, colIdx) => (
+                        <div key={column[0]?.[0] || `column-${colIdx}`} style={{ flex: 1, minWidth: 0 }}>
+                            {column.map(([groupName, groupThemes]) => (
+                                <GroupThemesList key={groupName} groupName={groupName} groupThemes={groupThemes} />
+                            ))}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </>
+    );
+}
 
 function CategoryThemesList({ categoryName, themes }: { readonly categoryName: string; readonly themes: readonly ThemesResponses[] }) {
     return (
@@ -25,7 +63,7 @@ function GroupThemesList({ groupName, groupThemes }: { readonly groupName: strin
     return (
         <div key={groupName} style={{ marginBottom: "2rem" }}>
             <h2 style={{ marginTop: 0 }}>{groupName}</h2>
-            {/* Themes sin categoría */}
+            {/* Themes without category */}
             {noCategory.length > 0 && (
                 <ul>
                     {noCategory.map((theme) => (
@@ -33,7 +71,7 @@ function GroupThemesList({ groupName, groupThemes }: { readonly groupName: strin
                     ))}
                 </ul>
             )}
-            {/* Themes agrupados por categoría */}
+            {/* Themes grouped by category */}
             {categories.map((catName) => (
                 <CategoryThemesList
                     key={catName}
@@ -42,45 +80,5 @@ function GroupThemesList({ groupName, groupThemes }: { readonly groupName: strin
                 />
             ))}
         </div>
-    );
-}
-
-export function ThemesList() {
-    const [themes, setThemes] = useState<ThemesResponses[]>([]);
-
-    useEffect(() => {
-        repository.searchAll().then((data) => {
-            setThemes(data);
-        });
-    }, []);
-
-    // Agrupar themes por group
-    const groupedThemes = themes.reduce((acc, theme) => {
-        const groupName = theme.group?.name || "Sin grupo";
-        if (!acc[groupName]) acc[groupName] = [];
-        acc[groupName].push(theme);
-        return acc;
-    }, {} as Record<string, ThemesResponses[]>);
-
-    // Todos los grupos en una sola caja, distribuidos en dos columnas
-    const groupEntries = Object.entries(groupedThemes);
-    const mid = Math.ceil(groupEntries.length / 2);
-    const columns = [groupEntries.slice(0, mid), groupEntries.slice(mid)];
-
-    return (
-        <>
-            <h1>Themes List</h1>
-            <div style={{ border: "1px solid #ccc", borderRadius: "12px", padding: "2rem", background: "#f5f5f5", marginTop: "2rem" }}>
-                <div style={{ display: "flex", gap: "2rem" }}>
-                    {columns.map((column, colIdx) => (
-                        <div key={column[0]?.[0] || `column-${colIdx}`} style={{ flex: 1, minWidth: 0 }}>
-                            {column.map(([groupName, groupThemes]) => (
-                                <GroupThemesList key={groupName} groupName={groupName} groupThemes={groupThemes} />
-                            ))}
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </>
     );
 }
