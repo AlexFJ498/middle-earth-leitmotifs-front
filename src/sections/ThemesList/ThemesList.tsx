@@ -1,42 +1,30 @@
-import React, { useEffect, useState } from "react";
+import styles from "./ThemesList.module.scss";
 import { ThemesResponses } from "../../infrastructure/ApiResponse";
 import { ApiThemeRepository } from "../../infrastructure/ApiThemeRepository";
+import { useThemes } from "./useThemes";
 
 export function ThemesList({ repository }: { readonly repository: ApiThemeRepository }) {
-    const [themes, setThemes] = useState<ThemesResponses[]>([]);
-
-    useEffect(() => {
-        repository.searchAll().then((data) => {
-            setThemes(data);
-        });
-    }, []);
+    const { themes } = useThemes(repository);
 
     // Group themes by group
     const groupedThemes = themes.reduce((acc, theme) => {
-        const groupName = theme.group?.name || "Sin grupo";
+        const groupName = theme.group?.name || "Without Group";
         if (!acc[groupName]) acc[groupName] = [];
         acc[groupName].push(theme);
         return acc;
     }, {} as Record<string, ThemesResponses[]>);
 
-    // Split groups into two columns
     const groupEntries = Object.entries(groupedThemes);
-    const mid = Math.ceil(groupEntries.length / 2);
-    const columns = [groupEntries.slice(0, mid), groupEntries.slice(mid)];
 
     return (
         <>
-            <h1>Themes List</h1>
-            <div style={{ border: "1px solid #ccc", borderRadius: "12px", padding: "2rem", background: "#f5f5f5", marginTop: "2rem" }}>
-                <div style={{ display: "flex", gap: "2rem" }}>
-                    {columns.map((column, colIdx) => (
-                        <div key={column[0]?.[0] || `column-${colIdx}`} style={{ flex: 1, minWidth: 0 }}>
-                            {column.map(([groupName, groupThemes]) => (
-                                <GroupThemesList key={groupName} groupName={groupName} groupThemes={groupThemes} />
-                            ))}
-                        </div>
-                    ))}
-                </div>
+            <div className={styles.headerContainer}>
+                <h1 className={styles.headerTitle}>Themes List</h1>
+            </div>
+            <div className={styles.container}>
+                {groupEntries.map(([groupName, groupThemes]) => (
+                    <GroupThemesList key={groupName} groupName={groupName} groupThemes={groupThemes} />
+                ))}
             </div>
         </>
     );
@@ -45,12 +33,12 @@ export function ThemesList({ repository }: { readonly repository: ApiThemeReposi
 function CategoryThemesList({ categoryName, themes }: { readonly categoryName: string; readonly themes: readonly ThemesResponses[] }) {
     return (
         <div key={categoryName} style={{ marginTop: "1rem" }}>
-            <span style={{ color: "gray", fontSize: "1rem" }}>{categoryName}</span>
-            <ul>
+            <span className={styles.categoryLabel}>{categoryName}</span>
+            <div className={styles.themeChips}>
                 {themes.map((theme) => (
-                    <li key={theme.id}>{theme.name}</li>
+                    <span key={theme.id} className={styles.themeChip} title={theme.name}>{theme.name}</span>
                 ))}
-            </ul>
+            </div>
         </div>
     );
 }
@@ -61,24 +49,26 @@ function GroupThemesList({ groupName, groupThemes }: { readonly groupName: strin
     const categories = Array.from(new Set(withCategory.map(t => t.category?.name)));
 
     return (
-        <div key={groupName} style={{ marginBottom: "2rem" }}>
-            <h2 style={{ marginTop: 0 }}>{groupName}</h2>
-            {/* Themes without category */}
-            {noCategory.length > 0 && (
-                <ul>
-                    {noCategory.map((theme) => (
-                        <li key={theme.id}>{theme.name}</li>
-                    ))}
-                </ul>
-            )}
-            {/* Themes grouped by category */}
-            {categories.map((catName) => (
-                <CategoryThemesList
-                    key={catName}
-                    categoryName={catName}
-                    themes={withCategory.filter(t => t.category?.name === catName)}
-                />
-            ))}
+        <div key={groupName} className={styles.card}>
+            <h2 className={styles.cardTitle}>{groupName}</h2>
+            <div className={styles.cardContent}>
+                {/* Themes without category */}
+                {noCategory.length > 0 && (
+                    <div className={styles.themeChips}>
+                        {noCategory.map((theme) => (
+                            <span key={theme.id} className={styles.themeChip} title={theme.name}>{theme.name}</span>
+                        ))}
+                    </div>
+                )}
+                {/* Themes grouped by category */}
+                {categories.map((catName) => (
+                    <CategoryThemesList
+                        key={catName}
+                        categoryName={catName}
+                        themes={withCategory.filter(t => t.category?.name === catName)}
+                    />
+                ))}
+            </div>
         </div>
     );
 }
