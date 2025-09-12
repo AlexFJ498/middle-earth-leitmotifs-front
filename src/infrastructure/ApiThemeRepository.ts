@@ -20,4 +20,24 @@ export class ApiThemeRepository implements ThemeRepository {
 
 		return data as ThemesResponses[];
 	}
+
+	async findById(id: string): Promise<Theme | null> {
+		const response = await fetch(`${this.baseUrl}/themes/${id}`, {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+
+		if (response.status === 404) {
+			return null;
+		}
+
+		if (!response.ok) {
+			throw new Error("Error fetching theme");
+		}
+
+		const data = await response.json();
+
+		return data as Theme;
+	}
 }

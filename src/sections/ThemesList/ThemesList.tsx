@@ -2,9 +2,14 @@ import { ThemesResponses } from "../../infrastructure/ApiResponse";
 import { ApiThemeRepository } from "../../infrastructure/ApiThemeRepository";
 import styles from "./ThemesList.module.scss";
 import { useThemes } from "./useThemes";
+import { WidgetsSkeleton } from "./WidgetsSkeleton";
 
 export function ThemesList({ repository }: { readonly repository: ApiThemeRepository }) {
-	const { themes } = useThemes(repository);
+	const { themes, isLoading } = useThemes(repository);
+
+	if (isLoading) {
+		return <WidgetsSkeleton />;
+	}
 
 	// Group themes by group
 	const groupedThemes = themes.reduce((acc, theme) => {
@@ -21,14 +26,15 @@ export function ThemesList({ repository }: { readonly repository: ApiThemeReposi
 
 	return (
 		<>
-			<div className={styles.headerContainer}>
-				<h1 className={styles.headerTitle}>Themes List</h1>
-			</div>
-			<div className={styles.container}>
-				{groupEntries.map(([groupName, groupThemes]) => (
-					<GroupThemesList key={groupName} groupName={groupName} groupThemes={groupThemes} />
-				))}
-			</div>
+		{themes.length === 0 ? (
+			<div><span>No themes found</span></div>
+		) : (
+		<div className={styles.container}>
+			{groupEntries.map(([groupName, groupThemes]) => (
+				<GroupThemesList key={groupName} groupName={groupName} groupThemes={groupThemes} />
+			))}
+		</div>
+		)}
 		</>
 	);
 }

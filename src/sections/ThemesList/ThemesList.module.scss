@@ -28,28 +28,6 @@
   user-select: none;
 }
 
-.headerContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 0;
-  padding: 2rem 0 1.5rem;
-  background: linear-gradient(90deg, #bfa76a 0%, #5c7f3a 100%);
-  box-shadow: 0 4px 24px rgb(58 44 10 / 12%);
-}
-
-.headerTitle {
-  padding: 0 2rem;
-  color: #e0dddd;
-  font-weight: 900;
-  font-size: 3rem;
-  letter-spacing: 4px;
-  text-shadow: 0 1px 10px #23200e;
-  background: #bfa76a;
-  border-radius: 1rem;
-}
-
 .themeChip:hover {
   transform: scale(1.01);
   opacity: 1;

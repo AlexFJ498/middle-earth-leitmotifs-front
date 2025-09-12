@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { mock } from "jest-mock-extended";
 
 import { ApiThemeRepository } from "../src/infrastructure/ApiThemeRepository";
-import { ThemesList } from "../src/sections/ThemesList/ThemesList";
+import { ThemesList } from "../src/sections/themesList/ThemesList";
 import { ThemeMother } from "./ThemeMother";
 
 jest.mock("../src/infrastructure/ApiThemeRepository");

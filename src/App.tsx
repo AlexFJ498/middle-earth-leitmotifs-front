@@ -1,8 +1,5 @@
-import { ApiThemeRepository } from "./infrastructure/ApiThemeRepository";
-import { ThemesList } from "./sections/ThemesList/ThemesList";
-
-const themeRepository = new ApiThemeRepository();
+import { Router } from "./Router";
 
 export function App() {
-	return <ThemesList repository={themeRepository} />;
+	return <Router />;
 }
