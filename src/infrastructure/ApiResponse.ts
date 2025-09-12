@@ -1,28 +1,28 @@
 interface Movies {
-    id: string;
-    name: string;
+	id: string;
+	name: string;
 }
 
 interface Groups {
-    id: string;
-    name: string;
+	id: string;
+	name: string;
 }
 
 interface Categories {
-    id: string;
-    name: string;
+	id: string;
+	name: string;
 }
 
 interface Tracks {
-    id: string;
-    name: string;
-    movie: Movies;
+	id: string;
+	name: string;
+	movie: Movies;
 }
 
 export interface ThemesResponses {
-    id: string;
-    name: string;
-    firstHeard: Tracks;
-    group: Groups;
-    category: Categories;
+	id: string;
+	name: string;
+	firstHeard: Tracks;
+	group: Groups;
+	category: Categories;
 }

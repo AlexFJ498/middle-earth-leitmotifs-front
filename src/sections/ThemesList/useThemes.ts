@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
-import { ThemesResponses } from "../../infrastructure/ApiResponse";
+
 import { ThemeRepository } from "../../domain/ThemeRepository";
+import { ThemesResponses } from "../../infrastructure/ApiResponse";
 
-export function useThemes(
-    repository: ThemeRepository
-):  { themes: ThemesResponses[] } {
-    const [themes, setThemes] = useState<ThemesResponses[]>([]);
+export function useThemes(repository: ThemeRepository): { themes: ThemesResponses[] } {
+	const [themes, setThemes] = useState<ThemesResponses[]>([]);
 
-    useEffect(() => {
-        repository.searchAll().then((data) => {
-            setThemes(data);
-        });
-    }, [repository]);
+	useEffect(() => {
+		repository.searchAll().then((data) => {
+			setThemes(data);
+		});
+	}, [repository]);
 
-    return { themes };
+	return { themes };
 }
