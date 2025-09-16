@@ -7,14 +7,18 @@ export function useTheme(
 	themeId: string
 ): {
 	theme: Theme | null;
+	isLoading: boolean;
 } {
 	const [theme, setTheme] = useState<Theme | null>(null);
+	const [isLoading, setIsLoading] = useState<boolean>(true);
 
 	useEffect(() => {
+		setIsLoading(true);
 		repository.findById(themeId).then((data) => {
 			setTheme(data);
+			setIsLoading(false);
 		});
 	}, [repository, themeId]);
 
-	return { theme };
+	return { theme, isLoading };
 }

@@ -22,7 +22,7 @@ function ChipsSkeletonRow() {
   );
 }
 
-function CategoryBlockSkeleton({ index }: { index: number }) {
+function CategoryBlockSkeleton({ index }: { readonly index: number }) {
   return (
     <div style={{ marginTop: index === 0 ? 0 : '1rem' }}>
       <div style={{ marginBottom: '.3rem' }}>

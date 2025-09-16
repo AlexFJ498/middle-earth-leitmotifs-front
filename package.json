@@ -10,7 +10,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-loading-skeleton": "^3.5.0",
-    "react-router-dom": "^7.8.2"
+    "react-router-dom": "^7.8.2",
+    "react-topbar-progress-indicator": "^4.1.1"
   },
   "scripts": {
     "start": "vite --port 3000 --open",
@@ -79,7 +80,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.5.2",
-  "@types/node": "^22.12.0",
+    "@types/node": "^22.12.0",
     "@types/react": "^18.0.30",
     "@types/react-dom": "^18.0.11",
     "@vitejs/plugin-react": "^5.0.2",

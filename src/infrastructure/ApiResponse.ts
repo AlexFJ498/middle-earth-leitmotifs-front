@@ -22,7 +22,7 @@ interface Tracks {
 export interface ThemesResponses {
 	id: string;
 	name: string;
-	firstHeard: Tracks;
+	first_heard: Tracks;
 	group: Groups;
 	category: Categories;
 }

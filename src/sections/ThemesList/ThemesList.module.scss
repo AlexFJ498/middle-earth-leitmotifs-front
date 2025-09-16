@@ -7,13 +7,14 @@
 }
 
 .themeChip {
-  max-width: 274px;
+  max-width: 320px;
   height: auto;
-  padding: 0.4rem 1rem;
+  padding: 0.65rem 1.25rem;
   overflow-x: hidden;
   color: #23200e;
   font-weight: 500;
-  font-size: 0.95rem;
+  font-size: 1.2rem;
+  line-height: 1.45;
   white-space: normal;
   word-break: break-word;
   overflow-wrap: break-word;
@@ -22,7 +23,7 @@
   border-radius: 999px;
   outline: none;
   box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
-  cursor: default;
+  cursor: pointer;
   opacity: 0.95;
   transition: transform 0.2s;
   user-select: none;
@@ -38,7 +39,7 @@
   margin-bottom: 0.5rem;
   color: #bfa76a;
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 1.35rem;
   letter-spacing: 0.5px;
   background: none;
 }
@@ -51,19 +52,53 @@ $text-light: #f8fafc;
 
 .container {
   display: grid;
-  flex-wrap: wrap;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-  min-width: 0;
-  max-width: 1200px;
-  min-height: 100vh;
-  margin: 0;
-  padding: 2rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.25rem;
+  width: 98%;
+  max-width: 2000px;
+  min-height: calc(100vh - 3rem);
+  margin: 1.25rem auto 2.25rem;
+  padding: 1.5rem 1.4rem 1.8rem;
   line-height: 1.3;
   text-align: left;
   background: linear-gradient(135deg, #23200e, #3a2c0a);
   border-radius: 2rem;
   box-shadow: 0 4px 24px rgb(58 44 10 / 12%);
+}
+
+@media (max-width: 1400px) {
+  .container {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 97%;
+  }
+}
+
+@media (max-width: 1024px) {
+  .container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 96%;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    grid-template-columns: 1fr;
+    padding: 1.25rem 1rem 1.75rem;
+    gap: 1rem;
+    width: 100%;
+  }
+  .card {
+    min-height: 380px;
+    max-height: 380px;
+    padding: 1.75rem 1.5rem 1.65rem;
+  }
+}
+
+@media (min-width: 1900px) {
+  .container {
+    width: 96%;
+    max-width: 2000px;
+  }
 }
 
 .card {
@@ -72,9 +107,9 @@ $text-light: #f8fafc;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  min-height: 340px;
-  max-height: 340px;
-  padding: 2rem;
+  min-height: 420px;
+  max-height: 420px;
+  padding: 2.4rem 2.4rem 2.1rem;
   overflow: hidden;
   color: #f4ecd8;
   background: rgb(58 44 10 / 8%);
@@ -86,13 +121,25 @@ $text-light: #f8fafc;
   transition: all 0.3s ease;
 }
 
+/* cardContent: scroll + nueva escala base */
 .cardContent {
   flex: 1;
   overflow-y: auto;
+  font-size: 1.12rem;
+  line-height: 1.55;
 }
 
 .card:hover {
   border-color: #bfa76a;
   box-shadow: 0 20px 40px rgb(58 44 10 / 35%);
   transform: translateY(-8px) scale(1.02);
+}
+
+.cardTitle {
+  margin: 0 0 1.1rem;
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #d8c892;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.45);
 }

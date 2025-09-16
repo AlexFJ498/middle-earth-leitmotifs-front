@@ -1,8 +1,9 @@
-import { ThemesResponses } from "../../infrastructure/ApiResponse";
 import { ApiThemeRepository } from "../../infrastructure/ApiThemeRepository";
 import styles from "./ThemesList.module.scss";
 import { useThemes } from "./useThemes";
-import { WidgetsSkeleton } from "./WidgetsSkeleton";
+import { Link } from "react-router-dom";
+import { WidgetsSkeleton } from "./ThemesListSkeleton";
+import { Theme } from "../../domain/Theme";
 
 export function ThemesList({ repository }: { readonly repository: ApiThemeRepository }) {
 	const { themes, isLoading } = useThemes(repository);
@@ -20,7 +21,7 @@ export function ThemesList({ repository }: { readonly repository: ApiThemeReposi
 		acc[groupName].push(theme);
 
 		return acc;
-	}, {} as Record<string, ThemesResponses[]>);
+	}, {} as Record<string, Theme[]>);
 
 	const groupEntries = Object.entries(groupedThemes);
 
@@ -44,16 +45,22 @@ function CategoryThemesList({
 	themes,
 }: {
 	readonly categoryName: string;
-	readonly themes: readonly ThemesResponses[];
+	readonly themes: readonly Theme[];
 }) {
 	return (
 		<div key={categoryName} style={{ marginTop: "1rem" }}>
 			<span className={styles.categoryLabel}>{categoryName}</span>
 			<div className={styles.themeChips}>
 				{themes.map((theme) => (
-					<span key={theme.id} className={styles.themeChip} title={theme.name}>
+					<Link
+						to={`/themes/${theme.id}`}
+						key={theme.id}
+						className={styles.themeChip}
+						title={theme.name}
+						style={{ textDecoration: "none" }}
+					>
 						{theme.name}
-					</span>
+					</Link>
 				))}
 			</div>
 		</div>
@@ -65,7 +72,7 @@ function GroupThemesList({
 	groupThemes,
 }: {
 	readonly groupName: string;
-	readonly groupThemes: readonly ThemesResponses[];
+	readonly groupThemes: readonly Theme[];
 }) {
 	const noCategory = groupThemes.filter((t) => !t.category);
 	const withCategory = groupThemes.filter((t) => t.category);
@@ -79,9 +86,15 @@ function GroupThemesList({
 				{noCategory.length > 0 && (
 					<div className={styles.themeChips}>
 						{noCategory.map((theme) => (
-							<span key={theme.id} className={styles.themeChip} title={theme.name}>
+							<Link
+								to={`/themes/${theme.id}`}
+								key={theme.id}
+								className={styles.themeChip}
+								title={theme.name}
+								style={{ textDecoration: "none" }}
+							>
 								{theme.name}
-							</span>
+							</Link>
 						))}
 					</div>
 				)}

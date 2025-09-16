@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
+import { Theme } from "../../domain/Theme";
 
 import { ThemeRepository } from "../../domain/ThemeRepository";
-import { ThemesResponses } from "../../infrastructure/ApiResponse";
 
-export function useThemes(repository: ThemeRepository): { themes: ThemesResponses[]; isLoading: boolean } {
-	const [themes, setThemes] = useState<ThemesResponses[]>([]);
+export function useThemes(repository: ThemeRepository): { themes: Theme[]; isLoading: boolean } {
+	const [themes, setThemes] = useState<Theme[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {

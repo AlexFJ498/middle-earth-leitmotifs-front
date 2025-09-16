@@ -2,6 +2,16 @@ import { Theme } from "../domain/Theme";
 import { ThemeRepository } from "../domain/ThemeRepository";
 import { ThemesResponses } from "./ApiResponse";
 
+function toDomainTheme(dto: ThemesResponses): Theme {
+  return {
+    id: dto.id,
+    name: dto.name,
+    firstHeard: dto.first_heard,
+    group: dto.group,
+    category: dto.category,
+  };
+}
+
 export class ApiThemeRepository implements ThemeRepository {
 	private readonly baseUrl = import.meta.env.VITE_API_URL;
 
@@ -13,12 +23,12 @@ export class ApiThemeRepository implements ThemeRepository {
 		});
 
 		if (!response.ok) {
-			throw new Error("Error fetching themesº");
+			throw new Error("Error fetching themes");
 		}
 
-		const data = await response.json();
+		const data: ThemesResponses[] = await response.json();
 
-		return data as ThemesResponses[];
+		return data.map(toDomainTheme);
 	}
 
 	async findById(id: string): Promise<Theme | null> {
@@ -36,8 +46,8 @@ export class ApiThemeRepository implements ThemeRepository {
 			throw new Error("Error fetching theme");
 		}
 
-		const data = await response.json();
+		const data: ThemesResponses = await response.json();
 
-		return data as Theme;
+		return toDomainTheme(data);
 	}
 }
