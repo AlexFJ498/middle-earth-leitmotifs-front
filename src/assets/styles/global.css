@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+@plugin './hero.js';
+@source '../../index.html';
+@source '../../**/*.{html,js,jsx,ts,tsx}';
+@source '../../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
+
+/* Fallback direct variables (in case @theme parsing fails) */
+:root {
+  --color-chip-gradient-start: #5c7f3a;
+  --color-chip-gradient-end: #bfa76a;
+  --color-chip-text: #23200e;
+}
+
+@theme {
+  --color-background: #102030;
+  --color-foreground: #f4ecd8;
+	--color-primary: #06b6d4;
+  --color-primary-foreground: #ffffff;
+  --radius-lg: 0.75rem;
+  /* Extended palette */
+  --color-gold: #bfa76a;
+  --color-gold-soft: #d8c892;
+  --color-leaf: #5c7f3a;
+  --color-card-bg: rgba(58,44,10,0.08);
+  --color-card-border: #bfa76a;
+  --color-chip-gradient-start: #5c7f3a;
+  --color-chip-gradient-end: #bfa76a;
+  --color-chip-text: #23200e;
+}
+
+body {
+  font-family: 'Cinzel', serif;
+}

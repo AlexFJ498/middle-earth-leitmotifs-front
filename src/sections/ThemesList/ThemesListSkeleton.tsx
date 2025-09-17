@@ -2,7 +2,7 @@ import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import styles from './ThemesList.module.scss';
 
-const PLACEHOLDER_GROUPS = 4;
+const PLACEHOLDER_GROUPS = 14;
 const PLACEHOLDER_CATEGORIES_PER_GROUP = 2;
 const PLACEHOLDER_CHIPS_PER_BLOCK = 6;
 
@@ -51,7 +51,7 @@ function GroupCardSkeleton() {
 
 export function WidgetsSkeleton() {
   return (
-    <SkeletonTheme baseColor="#3a2c1a" highlightColor="#5a4528" borderRadius={12} duration={1.2}>
+    <SkeletonTheme baseColor="#bfa76a" highlightColor="#5a4528" borderRadius={12} duration={1.2}>
       <div className={styles.container}>
         {groupIds.map((id) => (
           <GroupCardSkeleton key={id} />
