@@ -13,6 +13,7 @@ export class ThemeMother {
 			firstHeard: TrackMother.create(),
 			group: GroupMother.create(),
 			category: CategoryMother.create(),
+			description: faker.lorem.paragraphs({ min: 1, max: 3 }),
 			...params,
 		};
 

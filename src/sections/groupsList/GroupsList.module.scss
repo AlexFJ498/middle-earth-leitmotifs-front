@@ -1,4 +1,4 @@
-.themeChips {
+.groupChips {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
@@ -6,7 +6,7 @@
   margin-bottom: 0.5rem;
 }
 
- .themeChip {
+ .groupChip {
   max-width: 320px;
   height: auto;
   padding: 0.65rem 1.25rem;
@@ -29,7 +29,7 @@
   user-select: none;
  }
 
-.themeChip:hover {
+.groupChip:hover {
   transform: scale(1.01);
   opacity: 1;
 }

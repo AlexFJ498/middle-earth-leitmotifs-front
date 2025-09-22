@@ -9,6 +9,8 @@ export class TrackMother {
 			id: faker.string.uuid(),
 			name: faker.word.sample(),
 			movie: MovieMother.create(),
+			spotifyURL: null,
+				
 			...params,
 		};
 

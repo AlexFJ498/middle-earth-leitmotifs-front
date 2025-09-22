@@ -7,18 +7,18 @@ export function useGroup(
 	groupId: string
 ): {
 	group: Group | null;
-	isLoading: boolean;
+	isLoadingGroup: boolean;
 } {
 	const [group, setGroup] = useState<Group | null>(null);
-	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const [isLoadingGroup, setIsLoadingGroup] = useState<boolean>(true);
 
 	useEffect(() => {
-		setIsLoading(true);
+		setIsLoadingGroup(true);
 		repository.findById(groupId).then((data) => {
 			setGroup(data);
-			setIsLoading(false);
+			setIsLoadingGroup(false);
 		});
 	}, [repository, groupId]);
 
-	return { group, isLoading };
+	return { group, isLoadingGroup };
 }

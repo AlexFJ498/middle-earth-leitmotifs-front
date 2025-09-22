@@ -1,11 +1,11 @@
 import React from "react";
 import { ApiThemeRepository } from "../../infrastructure/ApiThemeRepository";
-import { ThemeDetail } from "./ThemeDetail";
+import { GroupsList } from "./GroupsList";
 
 const repository = new ApiThemeRepository();
 
-export class ThemeDetailFactory {
+export class GroupsListFactory {
     static create(): React.ReactElement {
-        return <ThemeDetail repository={repository} />;
+        return <GroupsList repository={repository} />;
     }
 }
