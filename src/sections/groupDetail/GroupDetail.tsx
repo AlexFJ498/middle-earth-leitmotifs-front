@@ -11,6 +11,8 @@ type ThemeCardProps = { theme: Theme; isOpen: boolean; onToggle: () => void };
 
 const ThemeCard = ({ theme: t, isOpen, onToggle }: ThemeCardProps) => {
 	const contentRef = useRef<HTMLDivElement>(null);
+	const revealRef = useRef<HTMLDivElement>(null);
+	const [isRevealed, setIsRevealed] = useState(false);
 	const [maxH, setMaxH] = useState(0);
 	useEffect(() => {
 		const el = contentRef.current;
@@ -23,6 +25,24 @@ const ThemeCard = ({ theme: t, isOpen, onToggle }: ThemeCardProps) => {
 			});
 		}
 	}, [t.description, isOpen]);
+
+	useEffect(() => {
+		const node = revealRef.current;
+		if (!node) return;
+		const prefersReduced = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+		if (prefersReduced) {
+			setIsRevealed(true);
+			return;
+		}
+		const io = new IntersectionObserver(([entry]) => {
+			if (entry.isIntersecting) {
+				setIsRevealed(true);
+				io.unobserve(entry.target);
+			}
+		}, { threshold: 0.5 });
+		io.observe(node);
+		return () => io.disconnect();
+	}, []);
 
 	const handleIframeLoad = () => {
 		const el = contentRef.current;
@@ -62,15 +82,16 @@ const ThemeCard = ({ theme: t, isOpen, onToggle }: ThemeCardProps) => {
 
 	return (
 		<li className="list-none">
-			<div className="rounded-xl border border-[rgba(191,167,106,0.35)] bg-[linear-gradient(145deg,rgba(191,167,106,0.06),rgba(58,44,10,0.2))] shadow-[0_0.25rem_0.875rem_rgba(0,0,0,0.25)]">
+			<div ref={revealRef} className={`group rounded-xl overflow-hidden bg-[var(--color-background)] transition-all duration-700 ease-out transform-gpu ${isRevealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`}>
+				<div className={`rounded-xl border border-[rgba(191,167,106,0.35)] bg-[linear-gradient(145deg,rgba(191,167,106,0.06),rgba(58,44,10,0.2))] shadow-[0_0.25rem_0.875rem_rgba(0,0,0,0.25)] transition-all duration-200 ease-out group-hover:border-[var(--color-gold)] group-hover:shadow-[0_0.5rem_1.375rem_rgba(0,0,0,0.45)] ${isOpen ? "border-[var(--color-gold)] shadow-[0_0.5rem_1.375rem_rgba(0,0,0,0.45)]" : ""}`}>
 				<button
 					type="button"
 					aria-expanded={isOpen}
 					aria-controls={`desc-${t.id}`}
 					onClick={onToggle}
-					className="group w-full text-left p-4 cursor-pointer"
+					className="w-full text-left p-4 cursor-pointer"
 				>
-					<div className="text-xl font-extrabold text-[var(--color-gold-soft)] transition-colors duration-200 group-hover:text-[var(--color-gold)]">{t.name}</div>
+					<div className={`text-xl font-extrabold transition-colors duration-200 ${isOpen ? "text-[var(--color-gold-soft)]" : "text-[var(--color-gold)] group-hover:text-[var(--color-gold-soft)]"}`}>{t.name}</div>
 					{t.firstHeard?.movie && (
 						<div className="mt-1 text-[0.95rem] italic text-white/80">
 							<span className="font-semibold not-italic">First Heard:</span> {t.firstHeard?.name} ({t.firstHeard?.movie?.name})
@@ -107,6 +128,7 @@ const ThemeCard = ({ theme: t, isOpen, onToggle }: ThemeCardProps) => {
 						)}
 					</div>
 				</div>
+				</div>
 			</div>
 		</li>
 	);
@@ -124,6 +146,9 @@ export function GroupDetail(
 	const { themes, isLoadingThemesByGroup } = useThemesByGroup(themeRepository, memoizedGroupId);
 	const navigate = useNavigate();
 	const [expanded, setExpanded] = useState<Set<string>>(new Set());
+	const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+	const lastFocusedRef = useRef<HTMLElement | null>(null);
+	const closeBtnRef = useRef<HTMLButtonElement>(null);
 	const isExpanded = (id: string) => expanded.has(id);
 	const toggleExpanded = (id: string) => {
 		setExpanded(prev => {
@@ -133,9 +158,29 @@ export function GroupDetail(
 		});
 	};
 
+	useEffect(() => {
+		if (!isImageModalOpen) return;
+		const onKey = (e: KeyboardEvent) => {
+			if (e.key === "Escape") setIsImageModalOpen(false);
+		};
+		// Lock scroll
+		const prevOverflow = document.body.style.overflow;
+		document.body.style.overflow = "hidden";
+		// Manage focus
+		lastFocusedRef.current = (document.activeElement as HTMLElement) ?? null;
+		setTimeout(() => closeBtnRef.current?.focus(), 0);
+
+		window.addEventListener("keydown", onKey);
+		return () => {
+			window.removeEventListener("keydown", onKey);
+			document.body.style.overflow = prevOverflow;
+			lastFocusedRef.current?.focus?.();
+		};
+	}, [isImageModalOpen]);
+
 	if (isLoadingGroup || isLoadingThemesByGroup) {
 		return (
-			<div className="max-w-[70rem] mx-auto px-8 pb-20 text-foreground">
+			<div className="max-w-[70rem] mx-auto px-8 text-foreground">
 				<div className="animate-pulse grid gap-4">
 					<div className="h-8 w-48 rounded bg-white/10" />
 					<div className="h-64 rounded-2xl bg-white/5 border border-white/10" />
@@ -160,96 +205,136 @@ export function GroupDetail(
 	const imageSrc = resolveImageSrc(group.imageUrl);
 
 	return (
-		<div className="max-w-[70rem] mx-auto px-8 pb-20 text-foreground leading-relaxed">
-			<div className="mb-4 grid grid-cols-[auto,1fr,auto] items-center">
-				<button
-					onClick={() => navigate(-1)}
-					aria-label="Volver"
-					className="justify-self-start self-center relative top-[2px] inline-flex items-center gap-2 px-4 py-2 rounded-full text-[0.9rem] font-semibold tracking-wide text-[var(--color-background)] bg-[linear-gradient(135deg,var(--color-gold),var(--color-gold-soft))] border border-[var(--color-gold)] shadow-[0_0.25rem_0.875rem_rgba(191,167,106,0.25)] transition-all duration-200 hover:shadow-[0_0.5rem_1.375rem_rgba(191,167,106,0.35)] hover:brightness-110 cursor-pointer active:shadow-[0_0.25rem_0.875rem_rgba(191,167,106,0.25)] focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/50">
-					← Back
-				</button>
-				<h1 className="m-0 self-center leading-none text-center text-[2.4rem] font-extrabold tracking-[0.12em] uppercase text-[var(--color-gold)] drop-shadow-[0_0.125rem_0.5rem_rgba(0,0,0,0.35)] font-[Cinzel,serif]">
-					{group.name}
-				</h1>
-				<button
-					aria-hidden="true"
-					tabIndex={-1}
-					type="button"
-					className="justify-self-end self-center relative top-[2px] opacity-0 pointer-events-none inline-flex items-center gap-2 px-4 py-2 rounded-full text-[0.9rem] font-semibold tracking-wide border"
-				>
-					← Back
-				</button>
-			</div>
-			<div className="mb-6 grid gap-6 md:grid-cols-2 items-stretch">
-				<div className="relative rounded-2xl overflow-hidden border border-[rgba(191,167,106,0.4)] shadow-[0_0.375rem_1.125rem_rgba(0,0,0,0.35)] h-full">
-					<img src={imageSrc} alt={`${group.name} cover`} loading="lazy" className="w-full h-64 object-cover md:h-full" />
-					<div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.25)_100%)] pointer-events-none" />
-				</div>
-				<div className="grid gap-3.5 p-6 rounded-2xl bg-[linear-gradient(145deg,rgba(191,167,106,0.08),rgba(58,44,10,0.25))] border border-[rgba(191,167,106,0.4)] backdrop-blur-md shadow-[0_0.375rem_1.125rem_rgba(0,0,0,0.35)] h-full">
-					<MarkdownText className="m-0 text-base" text={group.description} />
-				</div>
-			</div>
-
-			{themes.length === 0 ? (
-				<p className="mt-6 text-center text-base">No themes found in this group.</p>
-			) : (
-				<>
-					<p className="mt-2 mb-2 text-center text-[0.8rem] text-white/70">
-						Tip: For the best playback experience, sign in to Spotify in this browser.{" "}
-						<a
-							href="https://accounts.spotify.com/login"
-							target="_blank"
-							rel="noopener noreferrer"
-							className="ml-2 underline underline-offset-2 text-[var(--color-gold)] hover:text-[var(--color-gold-soft)]"
+		<>
+			<div className="max-w-[75rem] mx-auto text-foreground leading-relaxed">
+			<div className="rounded-3xl border border-[rgba(191,167,106,0.35)] bg-[rgba(16,32,48,1)] backdrop-blur-sm shadow-[0_0.75rem_2rem_rgba(0,0,0,0.25)]">
+				<div className="px-6 md:px-8 py-6 md:py-8">
+					<div className="mb-4 grid grid-cols-[auto,1fr,auto] items-center">
+						<button
+							onClick={() => navigate(-1)}
+							aria-label="Back"
+							className="justify-self-start self-center relative top-[2px] inline-flex items-center gap-2 px-4 py-2 rounded-full text-[0.9rem] font-semibold tracking-wide text-[var(--color-background)] bg-[linear-gradient(135deg,var(--color-gold),var(--color-gold-soft))] border border-[var(--color-gold)] shadow-[0_0.25rem_0.875rem_rgba(191,167,106,0.25)] transition-all duration-200 hover:shadow-[0_0.5rem_1.375rem_rgba(191,167,106,0.35)] hover:brightness-110 cursor-pointer active:shadow-[0_0.25rem_0.875rem_rgba(191,167,106,0.25)] focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/50">
+							← Back
+						</button>
+						<h1 className="m-0 self-center leading-none text-center text-[2.4rem] font-extrabold tracking-[0.12em] uppercase text-[var(--color-gold)] drop-shadow-[0_0.125rem_0.5rem_rgba(0,0,0,0.35)] font-[Cinzel,serif]">
+							{group.name}
+						</h1>
+					</div>
+					<div className="mb-6 grid gap-6 md:grid-cols-2 items-stretch">
+						<button
+							type="button"
+							className="group relative rounded-2xl overflow-hidden border border-[rgba(191,167,106,0.35)] shadow-[0_0.375rem_1.125rem_rgba(0,0,0,0.35)] h-full cursor-pointer p-0 transition-all duration-200 ease-out hover:scale-[1.005] hover:border-[var(--color-gold)] hover:shadow-[0_0.45rem_1.25rem_rgba(0,0,0,0.4)]"
+							aria-label="Ver imagen a tamaño completo"
+							onClick={() => setIsImageModalOpen(true)}
 						>
-							Sign in
-						</a>
-					</p>
-					<h2 className="mt-10 mb-4 text-2xl font-bold text-[var(--color-gold-soft)] drop-shadow-[0_0.125rem_0.5rem_rgba(0,0,0,0.35)] text-center">Themes in this group</h2>
-
-					{(() => {
-						interface CategoryBucket { id: string; name: string; items: Theme[] }
-						const uncategorized: Theme[] = themes.filter((t: Theme) => !t.category);
-						const byCategory = new Map<string, CategoryBucket>();
-						themes.forEach((t: Theme) => {
-							if (!t.category) return;
-							const key = t.category.id;
-							const existing = byCategory.get(key);
-							if (existing) {
-								existing.items.push(t);
-							} else {
-								byCategory.set(key, { id: key, name: t.category.name, items: [t] });
-							}
-						});
-						const orderedCategories = Array.from(byCategory.values())
-							.sort((a, b) => a.name.localeCompare(b.name))
-							.map(cat => ({ ...cat, items: cat.items.slice().sort((a, b) => a.name.localeCompare(b.name)) }));
-
-						const renderTheme = (t: Theme) => (
-							<ThemeCard key={t.id} theme={t} isOpen={isExpanded(t.id)} onToggle={() => toggleExpanded(t.id)} />
-						);
-
-						return (
-							<div className="space-y-8">
-								{uncategorized.length > 0 && (
-									<ul className="space-y-4">
-										{uncategorized.slice().sort((a, b) => a.name.localeCompare(b.name)).map(renderTheme)}
-									</ul>
-								)}
-
-								{orderedCategories.map((cat: CategoryBucket) => (
-									<div key={cat.id}>
-										<div className="mb-3 text-xl font-semibold tracking-wide text-[var(--color-gold)]">{cat.name}</div>
-										<ul className="space-y-4">
-											{cat.items.map(renderTheme)}
-										</ul>
-									</div>
-								))}
+							<img src={imageSrc} alt={`${group.name} cover`} loading="lazy" className="w-full h-64 object-cover md:h-full" />
+							<div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.25)_100%)] pointer-events-none" />
+							<div className="absolute inset-0 opacity-0 group-hover:opacity-80 transition-opacity duration-200 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0)_55%)]" />
+						</button>
+						<div className="rounded-2xl overflow-hidden bg-[var(--color-background)]">
+							<div className="flex flex-col justify-center gap-3.5 p-8 rounded-2xl bg-[linear-gradient(145deg,rgba(191,167,106,0.08),rgba(58,44,10,0.25))] border border-[rgba(191,167,106,0.35)] backdrop-blur-md shadow-[0_0.375rem_1.125rem_rgba(0,0,0,0.35)] h-full">
+								<MarkdownText className="m-0 text-[1.1rem]" text={group.description} />
 							</div>
-						);
-					})()}
-				</>
-			)}
+						</div>
+					</div>
+
+					{themes.length === 0 ? (
+						<p className="mt-6 text-center text-base">No themes found in this group.</p>
+					) : (
+						<>
+							<p className="mt-2 mb-2 text-center text-[0.8rem] text-white/70">
+								Tip: For the best playback experience, sign in to Spotify in this browser.{" "}
+								<a
+									href="https://accounts.spotify.com/login"
+									target="_blank"
+									rel="noopener noreferrer"
+									className="ml-2 underline underline-offset-2 text-[var(--color-gold)] hover:text-[var(--color-gold-soft)]"
+								>
+									Sign in
+								</a>
+							</p>
+							<h2 className="mt-10 mb-4 text-2xl font-bold text-[var(--color-gold)] drop-shadow-[0_0.125rem_0.5rem_rgba(0,0,0,0.35)] text-center">Themes in this group</h2>
+
+							{(() => {
+								interface CategoryBucket { id: string; name: string; items: Theme[] }
+								const uncategorized: Theme[] = themes.filter((t: Theme) => !t.category);
+								const byCategory = new Map<string, CategoryBucket>();
+								themes.forEach((t: Theme) => {
+									if (!t.category) return;
+									const key = t.category.id;
+									const existing = byCategory.get(key);
+									if (existing) {
+										existing.items.push(t);
+									} else {
+										byCategory.set(key, { id: key, name: t.category.name, items: [t] });
+									}
+								});
+								const orderedCategories = Array.from(byCategory.values())
+									.sort((a, b) => a.name.localeCompare(b.name))
+									.map(cat => ({ ...cat, items: cat.items.slice().sort((a, b) => a.name.localeCompare(b.name)) }));
+
+								const renderTheme = (t: Theme) => (
+									<ThemeCard key={t.id} theme={t} isOpen={isExpanded(t.id)} onToggle={() => toggleExpanded(t.id)} />
+								);
+
+								return (
+									<div className="space-y-8">
+										{uncategorized.length > 0 && (
+											<ul className="space-y-4">
+												{uncategorized.slice().sort((a, b) => a.name.localeCompare(b.name)).map(renderTheme)}
+											</ul>
+										)}
+
+										{orderedCategories.map((cat: CategoryBucket) => (
+											<div key={cat.id}>
+												<div className="mb-3 text-xl font-semibold tracking-wide text-[var(--color-gold)]">{cat.name}</div>
+												<ul className="space-y-4">
+													{cat.items.map(renderTheme)}
+												</ul>
+											</div>
+										))}
+									</div>
+								);
+							})()}
+						</>
+					)}
+				</div>
+			</div>
 		</div>
+		{/* Image Modal Overlay */}
+		<div
+			aria-hidden={!isImageModalOpen}
+			className={`fixed inset-0 z-[100] flex items-center justify-center transition-all duration-200 ${isImageModalOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+		>
+			<button
+				type="button"
+				aria-label="Cerrar modal"
+				className="absolute inset-0 bg-black/70"
+				onClick={() => setIsImageModalOpen(false)}
+			/>
+						<dialog
+				open={isImageModalOpen}
+							aria-label={`${group.name} image viewer`}
+							className={`group relative mx-4 max-w-6xl w-auto bg-transparent p-0 border-0 ${isImageModalOpen ? "scale-100 translate-y-0" : "scale-95 translate-y-1"} transition-transform duration-200`}
+			>
+							<button
+								type="button"
+								aria-label="Cerrar"
+								onClick={() => setIsImageModalOpen(false)}
+								ref={closeBtnRef}
+								className="absolute top-3 right-3 z-[101] inline-flex items-center justify-center w-11 h-11 rounded-full text-[var(--color-background)] bg-[linear-gradient(135deg,var(--color-gold),var(--color-gold-soft))] border border-[var(--color-gold)] shadow-[0_0.5rem_1.25rem_rgba(191,167,106,0.35)] transition-all duration-200 md:opacity-0 md:group-hover:opacity-100 hover:scale-105 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/60 cursor-pointer"
+							>
+								<svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" className="fill-none stroke-current stroke-2">
+									<path d="M6 6l12 12M18 6L6 18" />
+								</svg>
+							</button>
+				<img
+					src={imageSrc}
+					alt={`${group.name} full size`}
+					className="max-h-[85vh] max-w-[90vw] object-contain rounded-2xl shadow-[0_1rem_3rem_rgba(0,0,0,0.5)]"
+				/>
+			</dialog>
+		</div>
+		</>
 	)
 }

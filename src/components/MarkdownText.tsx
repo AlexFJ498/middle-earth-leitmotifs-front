@@ -8,7 +8,7 @@ const components = {
     	<p className="mb-3 leading-relaxed" {...props}>{props.children}</p>
   	),
   	strong: (props: React.PropsWithChildren<React.HTMLAttributes<HTMLElement>>) => (
-    	<strong className="font-semibold text-[var(--color-gold-soft)]" {...props}>{props.children}</strong>
+    	<strong className="font-semibold text-[var(--color-gold)]" {...props}>{props.children}</strong>
   	),
   	em: (props: React.PropsWithChildren<React.HTMLAttributes<HTMLElement>>) => (
     	<em className="italic" {...props}>{props.children}</em>
