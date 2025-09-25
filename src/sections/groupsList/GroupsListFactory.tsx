@@ -1,8 +1,8 @@
 import React from "react";
-import { ApiThemeRepository } from "../../infrastructure/ApiThemeRepository";
+import { ApiGroupRepository } from "../../infrastructure/ApiGroupRepository";
 import { GroupsList } from "./GroupsList";
 
-const repository = new ApiThemeRepository();
+const repository = new ApiGroupRepository();
 
 export class GroupsListFactory {
     static create(): React.ReactElement {

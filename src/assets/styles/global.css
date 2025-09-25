@@ -33,12 +33,27 @@
   --color-chip-gradient-start: #5c7f3a;
   --color-chip-gradient-end: #bfa76a;
   --color-chip-text: #23200e;
+  --panel-gradient: linear-gradient(145deg, rgba(191,167,106,0.06), rgba(58,44,10,0.2));
 }
 
 /* Global scale: increase base size 25% (16px -> 20px) */
-html { font-size: 125%; }
+html { font-size: 125%; box-sizing: border-box; }
+*, *::before, *::after { box-sizing: inherit; }
 
-body { font-family: 'Lora', serif; }
+/* Responsive typography: scale down rems on smaller screens */
+@media (max-width: 1024px) {
+  html { font-size: 118.75%; } /* ~19px */
+}
+@media (max-width: 768px) {
+  html { font-size: 112.5%; } /* 18px */
+}
+@media (max-width: 480px) {
+  html { font-size: 100%; } /* 16px */
+}
+/* Prevent horizontal scroll issues on mobile */
+html, body { overflow-x: hidden; }
+body { width: 100%; background-color: var(--color-background); color: var(--color-foreground); font-family: 'Lora', serif; }
+#root { width: 100%; overflow-x: hidden; }
 h1,h2,h3,h4,h5,h6 { font-family: 'Cinzel', serif; }
 
 .font-cinzel { font-family: 'Cinzel', serif; }

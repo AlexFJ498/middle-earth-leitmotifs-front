@@ -5,14 +5,14 @@ export function Home() {
 	return (
 		<div className="relative">
 			<div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-				<div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(191,167,106,0.18),transparent_60%),radial-gradient(circle_at_70%_70%,rgba(58,44,10,0.35),transparent_65%)]" />
+				<div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.06),transparent_60%),radial-gradient(circle_at_70%_70%,rgba(58,44,10,0.35),transparent_65%)]" />
 				<div className="absolute inset-0 backdrop-blur-[0.125rem]" />
 			</div>
 
-			<div className="mx-auto w-[98%] max-w-[100rem] my-6 md:my-10 p-6 md:p-10 rounded-[2rem] bg-[linear-gradient(145deg,rgba(191,167,106,0.08),rgba(58,44,10,0.25))] ring-1 ring-[rgba(191,167,106,0.35)] shadow-[0_0.375rem_1.375rem_rgba(0,0,0,0.35)] backdrop-blur-sm">
+			<div className="mx-auto w-[98%] max-w-[100rem] my-6 md:my-10 p-6 md:p-10 rounded-[2rem] bg-[linear-gradient(145deg,rgba(191,167,106,0.08),rgba(58,44,10,0.25))] border border-[rgba(191,167,106,0.35)] shadow-[0_0.375rem_1.25rem_rgba(0,0,0,0.35)] backdrop-blur-sm">
 			<section className="mx-auto max-w-5xl pt-4 md:pt-6 pb-20 px-2 md:px-4">
 				<div className="text-center">
-					<h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-[var(--color-gold-soft)] via-[var(--color-gold-bright)] to-amber-200 bg-clip-text text-transparent drop-shadow-[0_0.25rem_1.25rem_rgba(0,0,0,0.45)]">
+					<h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-[var(--color-gold-soft)] to-[var(--color-gold)] bg-clip-text text-transparent drop-shadow-[0_0.25rem_1.25rem_rgba(0,0,0,0.45)]">
 						The musical themes of Middle-earth
 					</h1>
 					<p className="mt-6 mx-auto max-w-2xl text-lg leading-relaxed text-foreground/85">
@@ -72,13 +72,13 @@ export function Home() {
 
 function FeatureCard({ title, desc, icon }: { readonly title: string; readonly desc: string; readonly icon: React.ReactNode }) {
 	return (
-		<div className="group relative overflow-hidden rounded-xl border border-[var(--color-card-border)] bg-[var(--color-card-bg)]/60 p-5 md:p-6 shadow-[0_0.375rem_1.5rem_rgba(0,0,0,0.35)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_0.875rem_2.25rem_rgba(0,0,0,0.45)]">
-			<div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_30%_20%,rgba(191,167,106,0.18),transparent_60%)]" aria-hidden />
+		<div className="group relative overflow-hidden rounded-xl border border-[rgba(191,167,106,0.35)] bg-[var(--panel-gradient),var(--color-background)] p-5 md:p-6 shadow-[0_0.25rem_0.875rem_rgba(0,0,0,0.25)] transition-all duration-200 ease-out hover:-translate-y-1.5 hover:shadow-[0_0.5rem_1.375rem_rgba(0,0,0,0.45)] hover:border-[var(--color-gold)]">
+			<div aria-hidden className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-80 transition-opacity duration-200 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0)_55%)]" />
 			<div className="flex items-start gap-3 mb-3">
-				<div className="shrink-0 h-11 w-11 rounded-lg bg-[var(--color-gold-soft)]/15 text-[var(--color-gold-soft)] flex items-center justify-center backdrop-blur-sm border border-[var(--color-gold-soft)]/30">
+				<div className="shrink-0 h-11 w-11 rounded-lg bg-[rgba(191,167,106,0.12)] text-[var(--color-gold-soft)] flex items-center justify-center border border-[rgba(191,167,106,0.35)] transition-colors">
 					{icon}
 				</div>
-				<h3 className="text-lg font-semibold tracking-wide text-[var(--color-gold-soft)] m-0">
+				<h3 className="text-lg font-semibold tracking-wide text-[var(--color-gold)] group-hover:text-[var(--color-gold-soft)] transition-colors m-0">
 					{title}
 				</h3>
 			</div>

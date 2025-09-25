@@ -14,6 +14,7 @@ const ThemeCard = ({ theme: t, isOpen, onToggle }: ThemeCardProps) => {
 	const revealRef = useRef<HTMLDivElement>(null);
 	const [isRevealed, setIsRevealed] = useState(false);
 	const [maxH, setMaxH] = useState(0);
+    const [isPressed, setIsPressed] = useState(false);
 	useEffect(() => {
 		const el = contentRef.current;
 		if (!el) return;
@@ -82,16 +83,22 @@ const ThemeCard = ({ theme: t, isOpen, onToggle }: ThemeCardProps) => {
 
 	return (
 		<li className="list-none">
-			<div ref={revealRef} className={`group rounded-xl overflow-hidden bg-[var(--color-background)] transition-all duration-700 ease-out transform-gpu ${isRevealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`}>
-				<div className={`rounded-xl border border-[rgba(191,167,106,0.35)] bg-[linear-gradient(145deg,rgba(191,167,106,0.06),rgba(58,44,10,0.2))] shadow-[0_0.25rem_0.875rem_rgba(0,0,0,0.25)] transition-all duration-200 ease-out group-hover:border-[var(--color-gold)] group-hover:shadow-[0_0.5rem_1.375rem_rgba(0,0,0,0.45)] ${isOpen ? "border-[var(--color-gold)] shadow-[0_0.5rem_1.375rem_rgba(0,0,0,0.45)]" : ""}`}>
+				<div ref={revealRef} className={`group rounded-xl overflow-hidden bg-[var(--color-background)] transition-all duration-700 ease-out transform-gpu ${isRevealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`}>
+				<div className={`rounded-xl border border-[rgba(191,167,106,0.35)] bg-[linear-gradient(145deg,rgba(191,167,106,0.06),rgba(58,44,10,0.2))] shadow-[0_0.25rem_0.875rem_rgba(0,0,0,0.25)] transition-all duration-200 ease-out group-hover:border-[var(--color-gold)] group-hover:shadow-[0_0.5rem_1.375rem_rgba(0,0,0,0.45)] ${isOpen || isPressed ? "border-[var(--color-gold)] shadow-[0_0.5rem_1.375rem_rgba(0,0,0,0.45)]" : ""} ${isPressed ? "scale-[0.995] brightness-105" : ""}`}>
 				<button
 					type="button"
 					aria-expanded={isOpen}
 					aria-controls={`desc-${t.id}`}
 					onClick={onToggle}
+					onMouseDown={() => setIsPressed(true)}
+					onMouseUp={() => setIsPressed(false)}
+					onMouseLeave={() => setIsPressed(false)}
+					onTouchStart={() => setIsPressed(true)}
+					onTouchEnd={() => setIsPressed(false)}
+					onTouchCancel={() => setIsPressed(false)}
 					className="w-full text-left p-4 cursor-pointer"
 				>
-					<div className={`text-xl font-extrabold transition-colors duration-200 ${isOpen ? "text-[var(--color-gold-soft)]" : "text-[var(--color-gold)] group-hover:text-[var(--color-gold-soft)]"}`}>{t.name}</div>
+					<div className={`text-xl font-extrabold transition-colors duration-200 ${isOpen || isPressed ? "text-[var(--color-gold-soft)]" : "text-[var(--color-gold)] group-hover:text-[var(--color-gold-soft)]"}`}>{t.name}</div>
 					{t.firstHeard?.movie && (
 						<div className="mt-1 text-[0.95rem] italic text-white/80">
 							<span className="font-semibold not-italic">First Heard:</span> {t.firstHeard?.name} ({t.firstHeard?.movie?.name})
@@ -207,32 +214,37 @@ export function GroupDetail(
 	return (
 		<>
 			<div className="max-w-[75rem] mx-auto text-foreground leading-relaxed">
-			<div className="rounded-3xl border border-[rgba(191,167,106,0.35)] bg-[rgba(16,32,48,1)] backdrop-blur-sm shadow-[0_0.75rem_2rem_rgba(0,0,0,0.25)]">
+			<div className="rounded-3xl border border-[rgba(191,167,106,0.35)] bg-[linear-gradient(145deg,rgba(191,167,106,0.08),rgba(58,44,10,0.25))] backdrop-blur-sm shadow-[0_0.75rem_2rem_rgba(0,0,0,0.25)]">
 				<div className="px-6 md:px-8 py-6 md:py-8">
-					<div className="mb-4 grid grid-cols-[auto,1fr,auto] items-center">
+					<div className="mb-6 grid grid-cols-[auto,1fr,auto] items-center">
 						<button
 							onClick={() => navigate(-1)}
 							aria-label="Back"
-							className="justify-self-start self-center relative top-[2px] inline-flex items-center gap-2 px-4 py-2 rounded-full text-[0.9rem] font-semibold tracking-wide text-[var(--color-background)] bg-[linear-gradient(135deg,var(--color-gold),var(--color-gold-soft))] border border-[var(--color-gold)] shadow-[0_0.25rem_0.875rem_rgba(191,167,106,0.25)] transition-all duration-200 hover:shadow-[0_0.5rem_1.375rem_rgba(191,167,106,0.35)] hover:brightness-110 cursor-pointer active:shadow-[0_0.25rem_0.875rem_rgba(191,167,106,0.25)] focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/50">
-							← Back
+							className="group justify-self-start self-center relative top-[2px] inline-flex items-center gap-2 px-4 py-2 rounded-full text-[0.9rem] font-semibold tracking-wide text-[var(--color-background)] bg-[linear-gradient(135deg,var(--color-gold),var(--color-gold-soft))] border border-[var(--color-gold)] filter brightness-100 transition-all duration-200 ease-out hover:brightness-110 cursor-pointer">
+							<span className="inline-flex items-center gap-2">
+								<svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" className="transition-transform duration-200 group-hover:-translate-x-0.5 group-active:-translate-x-1 group-focus-visible:-translate-x-0.5">
+									<path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+								</svg>
+								<span>Back</span>
+							</span>
 						</button>
-						<h1 className="m-0 self-center leading-none text-center text-[2.4rem] font-extrabold tracking-[0.12em] uppercase text-[var(--color-gold)] drop-shadow-[0_0.125rem_0.5rem_rgba(0,0,0,0.35)] font-[Cinzel,serif]">
+						<h1 className="mt-5 self-center leading-none text-center text-[2.4rem] font-extrabold tracking-[0.12em] uppercase text-[var(--color-gold)] drop-shadow-[0_0.125rem_0.5rem_rgba(0,0,0,0.35)] font-[Cinzel,serif]">
 							{group.name}
 						</h1>
 					</div>
-					<div className="mb-6 grid gap-6 md:grid-cols-2 items-stretch">
+					<div className="mb-6 grid gap-6 lg:grid-cols-2 items-stretch">
 						<button
 							type="button"
 							className="group relative rounded-2xl overflow-hidden border border-[rgba(191,167,106,0.35)] shadow-[0_0.375rem_1.125rem_rgba(0,0,0,0.35)] h-full cursor-pointer p-0 transition-all duration-200 ease-out hover:scale-[1.005] hover:border-[var(--color-gold)] hover:shadow-[0_0.45rem_1.25rem_rgba(0,0,0,0.4)]"
 							aria-label="Ver imagen a tamaño completo"
 							onClick={() => setIsImageModalOpen(true)}
 						>
-							<img src={imageSrc} alt={`${group.name} cover`} loading="lazy" className="w-full h-64 object-cover md:h-full" />
+							<img src={imageSrc} alt={`${group.name} cover`} loading="lazy" className="w-full h-64 object-cover lg:h-full" />
 							<div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.25)_100%)] pointer-events-none" />
 							<div className="absolute inset-0 opacity-0 group-hover:opacity-80 transition-opacity duration-200 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0)_55%)]" />
 						</button>
-						<div className="rounded-2xl overflow-hidden bg-[var(--color-background)]">
-							<div className="flex flex-col justify-center gap-3.5 p-8 rounded-2xl bg-[linear-gradient(145deg,rgba(191,167,106,0.08),rgba(58,44,10,0.25))] border border-[rgba(191,167,106,0.35)] backdrop-blur-md shadow-[0_0.375rem_1.125rem_rgba(0,0,0,0.35)] h-full">
+						<div className="rounded-2xl overflow-hidden">
+							<div className="flex flex-col justify-center gap-3.5 p-8 rounded-2xl bg-[var(--panel-gradient)] border border-[rgba(191,167,106,0.35)] shadow-[0_0.25rem_0.875rem_rgba(0,0,0,0.25)] h-full">
 								<MarkdownText className="m-0 text-[1.1rem]" text={group.description} />
 							</div>
 						</div>
@@ -319,10 +331,10 @@ export function GroupDetail(
 			>
 							<button
 								type="button"
-								aria-label="Cerrar"
+								aria-label="Close"
 								onClick={() => setIsImageModalOpen(false)}
 								ref={closeBtnRef}
-								className="absolute top-3 right-3 z-[101] inline-flex items-center justify-center w-11 h-11 rounded-full text-[var(--color-background)] bg-[linear-gradient(135deg,var(--color-gold),var(--color-gold-soft))] border border-[var(--color-gold)] shadow-[0_0.5rem_1.25rem_rgba(191,167,106,0.35)] transition-all duration-200 md:opacity-0 md:group-hover:opacity-100 hover:scale-105 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/60 cursor-pointer"
+								className="absolute top-3 right-3 z-[101] inline-flex items-center justify-center w-11 h-11 rounded-full text-[var(--color-background)] bg-[linear-gradient(135deg,var(--color-gold),var(--color-gold-soft))] border border-[var(--color-gold)] shadow-[0_0.5rem_1.25rem_rgba(191,167,106,0.35)] transition-all duration-200 md:opacity-0 md:group-hover:opacity-100 hover:scale-105 filter brightness-100 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/60 cursor-pointer"
 							>
 								<svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" className="fill-none stroke-current stroke-2">
 									<path d="M6 6l12 12M18 6L6 18" />
