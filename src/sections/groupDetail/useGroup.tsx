@@ -14,10 +14,15 @@ export function useGroup(
 
 	useEffect(() => {
 		setIsLoadingGroup(true);
-		repository.findById(groupId).then((data) => {
-			setGroup(data);
-			setIsLoadingGroup(false);
-		});
+		repository
+			.findById(groupId)
+			.then((data) => {
+				setGroup(data);
+			})
+			.catch((err) => {
+				setGroup(null);
+			})
+			.finally(() => setIsLoadingGroup(false));
 	}, [repository, groupId]);
 
 	return { group, isLoadingGroup };

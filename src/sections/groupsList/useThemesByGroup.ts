@@ -9,10 +9,17 @@ export function useThemesByGroup(repository: ThemeRepository, groupId: string): 
 
 	useEffect(() => {
 		setIsLoadingThemesByGroup(true);
-		repository.findByGroupId(groupId).then((data) => {
-			setThemes(data);
-			setIsLoadingThemesByGroup(false);
-		});
+		repository
+			.findByGroupId(groupId)
+			.then((data) => {
+				setThemes(data);
+			})
+			.catch((err) => {
+				setThemes([]);
+			})
+			.finally(() => {
+				setIsLoadingThemesByGroup(false);
+			});
 	}, [repository, groupId]);
 
 	return { themes, isLoadingThemesByGroup };

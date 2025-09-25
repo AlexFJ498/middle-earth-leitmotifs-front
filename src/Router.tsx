@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import { AboutFactory } from './sections/about/AboutFactory';
 import { Layout } from './sections/layout/Layout';
 import { GroupsListFactory } from './sections/groupsList/GroupsListFactory';
@@ -25,7 +25,12 @@ const router = createBrowserRouter([
             {
                 path: "/about",
                 element: AboutFactory.create(),
-            }
+            },
+            // Catch-all for unknown routes -> redirect to home
+            {
+                path: "*",
+                element: <Navigate to="/" replace />,
+            },
         ]
     } 
 ]);

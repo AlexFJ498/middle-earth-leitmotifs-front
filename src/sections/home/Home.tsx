@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { TipSpotifySignIn } from '../../components/TipSpotifySignIn';
 
 export function Home() {
 
@@ -19,17 +20,7 @@ export function Home() {
 						Explore the leitmotifs of Howard Shore's award-winning scores for <span className="font-semibold">The Lord of the Rings</span> trilogy—described and organized with reference to Doug Adams's work. A clear, visual way to navigate themes: their first appearances, narrative roles, and thematic relationships.
 					</p>
 
-					<p className="mt-4 mx-auto max-w-2xl text-sm leading-relaxed text-foreground/75 text-center">
-						Tip: For the best playback experience, sign in to Spotify in this browser.{" "}
-						<a
-							href="https://accounts.spotify.com/login"
-							target="_blank"
-							rel="noopener noreferrer"
-							className="underline underline-offset-2 text-[var(--color-gold-soft)] hover:text-[var(--color-gold-bright)]"
-						>
-							Sign in
-						</a>
-					</p>
+					<TipSpotifySignIn />
 
 					<div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
 						<Link

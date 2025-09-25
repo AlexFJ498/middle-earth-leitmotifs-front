@@ -6,6 +6,8 @@ import { GroupRepository } from "../../domain/GroupRepository";
 import { Theme } from "../../domain/Theme";
 import { useThemesByGroup } from "../groupsList/useThemesByGroup";
 import { MarkdownText } from "../../components/MarkdownText";
+import { TipSpotifySignIn } from "../../components/TipSpotifySignIn";
+import styles from "./GroupDetail.module.scss";
 
 type ThemeCardProps = { theme: Theme; isOpen: boolean; onToggle: () => void };
 
@@ -83,8 +85,8 @@ const ThemeCard = ({ theme: t, isOpen, onToggle }: ThemeCardProps) => {
 
 	return (
 		<li className="list-none">
-				<div ref={revealRef} className={`group rounded-xl overflow-hidden bg-[var(--color-background)] transition-all duration-700 ease-out transform-gpu ${isRevealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`}>
-				<div className={`rounded-xl border border-[rgba(191,167,106,0.35)] bg-[linear-gradient(145deg,rgba(191,167,106,0.06),rgba(58,44,10,0.2))] shadow-[0_0.25rem_0.875rem_rgba(0,0,0,0.25)] transition-all duration-200 ease-out group-hover:border-[var(--color-gold)] group-hover:shadow-[0_0.5rem_1.375rem_rgba(0,0,0,0.45)] ${isOpen || isPressed ? "border-[var(--color-gold)] shadow-[0_0.5rem_1.375rem_rgba(0,0,0,0.45)]" : ""} ${isPressed ? "scale-[0.995] brightness-105" : ""}`}>
+				<div ref={revealRef} className={`${styles.themeReveal} ${isRevealed ? styles.revealed : ""}`}>
+				<div className={`${styles.themeCard} ${isOpen || isPressed ? styles.themeCardOpen : ""} ${isPressed ? styles.themeCardPressed : ""}`}>
 				<button
 					type="button"
 					aria-expanded={isOpen}
@@ -96,13 +98,13 @@ const ThemeCard = ({ theme: t, isOpen, onToggle }: ThemeCardProps) => {
 					onTouchStart={() => setIsPressed(true)}
 					onTouchEnd={() => setIsPressed(false)}
 					onTouchCancel={() => setIsPressed(false)}
-					className="w-full text-left p-4 cursor-pointer"
+					className={styles.themeCardButton}
 				>
-					<div className={`text-xl font-extrabold transition-colors duration-200 ${isOpen || isPressed ? "text-[var(--color-gold-soft)]" : "text-[var(--color-gold)] group-hover:text-[var(--color-gold-soft)]"}`}>{t.name}</div>
+					<div className={`${styles.themeName} ${isOpen || isPressed ? styles.themeNameOpen : ""}`}>{t.name}</div>
 					{t.firstHeard?.movie && (
 						<div className="mt-1 text-[0.95rem] italic text-white/80">
 							<span className="font-semibold not-italic">First Heard:</span> {t.firstHeard?.name} ({t.firstHeard?.movie?.name})
-							<span className="not-italic ml-2 inline-flex items-center px-2 py-0.5 rounded-full border border-[rgba(191,167,106,0.35)] bg-[rgba(191,167,106,0.12)] text-[0.85rem] text-[var(--color-gold-soft)]">
+							<span className={styles.timeChip}>
 								{formatTime(t.firstHeardStart)}
 								<span className="mx-1 text-white/60">–</span>
 								{formatTime(t.firstHeardEnd)}
@@ -116,7 +118,7 @@ const ThemeCard = ({ theme: t, isOpen, onToggle }: ThemeCardProps) => {
 					style={{ maxHeight: isOpen ? maxH : 0 }}
 					className={`overflow-hidden transition-[max-height] duration-300 ease-in-out`}
 				>
-					<div className={`${isOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1"} p-4 border-t border-[rgba(191,167,106,0.25)] transition-all duration-300 ease-in-out`}>
+					<div className={`${styles.content} ${isOpen ? styles.contentOpen : styles.contentClosed}`}>
 						{isOpen && getSpotifyEmbedSrc() && (
 							<iframe
 								title={`Spotify player for ${t.firstHeard?.name ?? t.name}`}
@@ -254,17 +256,7 @@ export function GroupDetail(
 						<p className="mt-6 text-center text-base">No themes found in this group.</p>
 					) : (
 						<>
-							<p className="mt-2 mb-2 text-center text-[0.8rem] text-white/70">
-								Tip: For the best playback experience, sign in to Spotify in this browser.{" "}
-								<a
-									href="https://accounts.spotify.com/login"
-									target="_blank"
-									rel="noopener noreferrer"
-									className="ml-2 underline underline-offset-2 text-[var(--color-gold)] hover:text-[var(--color-gold-soft)]"
-								>
-									Sign in
-								</a>
-							</p>
+							<TipSpotifySignIn />
 							<h2 className="mt-10 mb-4 text-2xl font-bold text-[var(--color-gold)] drop-shadow-[0_0.125rem_0.5rem_rgba(0,0,0,0.35)] text-center">Themes in this group</h2>
 
 							{(() => {
