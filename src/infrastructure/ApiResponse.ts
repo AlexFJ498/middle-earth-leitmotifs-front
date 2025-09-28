@@ -1,28 +1,34 @@
-interface Movies {
-	id: string;
+interface MoviesResponses {
+	id  : string;
 	name: string;
 }
 
-interface Groups {
-	id: string;
+export interface GroupsResponses {
+	id         : string;
+	name       : string;
+	description: string;
+	image_url  : string;
+}
+
+interface CategoriesResponses {
+	id  : string;
 	name: string;
 }
 
-interface Categories {
-	id: string;
-	name: string;
-}
-
-interface Tracks {
-	id: string;
-	name: string;
-	movie: Movies;
+export interface TracksResponses {
+	id         : string;
+	name       : string;
+	movie      : MoviesResponses;
+	spotify_url: string | null;
 }
 
 export interface ThemesResponses {
-	id: string;
-	name: string;
-	first_heard: Tracks;
-	group: Groups;
-	category: Categories;
+	id               : string;
+	name             : string;
+	first_heard      : TracksResponses;
+	group            : GroupsResponses;
+	description      : string;
+	first_heard_start: number;
+	first_heard_end  : number;
+	category         : CategoriesResponses;
 }

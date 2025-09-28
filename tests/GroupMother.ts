@@ -7,6 +7,8 @@ export class GroupMother {
 		const defaultParams: Group = {
 			id: faker.string.uuid(),
 			name: faker.word.sample(),
+			description: faker.lorem.paragraphs({ min: 1, max: 3 }),
+			imageUrl: faker.image.urlLoremFlickr({ category: "nature", width: 640, height: 480 }),
 			...params,
 		};
 

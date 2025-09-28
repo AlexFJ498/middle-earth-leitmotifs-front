@@ -1,0 +1,46 @@
+.groupChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  max-width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+ .groupChip {
+  max-width: 320px;
+  height: auto;
+  padding: 0.65rem 1.25rem;
+  overflow-x: hidden;
+  color: var(--color-chip-text, #23200e);
+  font-weight: 500;
+  font-size: 1.2rem;
+  line-height: 1.45;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  background: linear-gradient(90deg, var(--color-chip-gradient-start, #5c7f3a), var(--color-chip-gradient-end, #bfa76a));
+  border: none;
+  border-radius: 999px;
+  outline: none;
+  box-shadow: 0 2px 8px rgba(0 0 0 / 0.08);
+  cursor: pointer;
+  opacity: 0.95;
+  transition: transform 0.2s, box-shadow 0.2s;
+  user-select: none;
+ }
+
+.groupChip:hover {
+  transform: scale(1.01);
+  opacity: 1;
+}
+
+ .categoryLabel {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  color: var(--color-gold);
+  font-weight: 600;
+  font-size: 1.35rem;
+  letter-spacing: 0.5px;
+  background: none;
+ }
+

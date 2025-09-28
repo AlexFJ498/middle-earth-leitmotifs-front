@@ -1,0 +1,59 @@
+@import "tailwindcss";
+/* Google Fonts: only Cinzel (headings) and Lora (body) */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:wght@400;500;600&display=swap');
+
+@plugin './hero.js';
+@source '../../index.html';
+@source '../../**/*.{html,js,jsx,ts,tsx}';
+@source '../../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
+
+/* Fallback direct variables (in case @theme parsing fails) */
+:root {
+  --color-chip-gradient-start: #5c7f3a;
+  --color-chip-gradient-end: #bfa76a;
+  --color-chip-text: #23200e;
+  --color-gold-bright: #e9d9a8;
+  --font-heading: 'Cinzel', serif; /* preserved in case future use */
+  --font-body: 'Lora', serif;
+}
+
+@theme {
+  --color-background: #102030;
+  --color-foreground: #f4ecd8;
+	--color-primary: #06b6d4;
+  --color-primary-foreground: #ffffff;
+  --radius-lg: 0.75rem;
+  /* Extended palette */
+  --color-gold: #bfa76a;
+  --color-gold-soft: #d8c892;
+  --color-gold-bright: #e9d9a8;
+  --color-leaf: #5c7f3a;
+  --color-card-bg: rgba(58,44,10,0.08);
+  --color-card-border: #bfa76a;
+  --color-chip-gradient-start: #5c7f3a;
+  --color-chip-gradient-end: #bfa76a;
+  --color-chip-text: #23200e;
+  --panel-gradient: linear-gradient(145deg, rgba(191,167,106,0.06), rgba(58,44,10,0.2));
+}
+
+/* Global scale: increase base size 25% (16px -> 20px) */
+html { font-size: 125%; box-sizing: border-box; }
+*, *::before, *::after { box-sizing: inherit; }
+
+/* Responsive typography: scale down rems on smaller screens */
+@media (max-width: 1024px) {
+  html { font-size: 118.75%; } /* ~19px */
+}
+@media (max-width: 768px) {
+  html { font-size: 112.5%; } /* 18px */
+}
+@media (max-width: 480px) {
+  html { font-size: 100%; } /* 16px */
+}
+/* Prevent horizontal scroll issues on mobile */
+html, body { overflow-x: hidden; }
+body { width: 100%; background-color: var(--color-background); color: var(--color-foreground); font-family: 'Lora', serif; }
+#root { width: 100%; overflow-x: hidden; }
+h1,h2,h3,h4,h5,h6 { font-family: 'Cinzel', serif; }
+
+.font-cinzel { font-family: 'Cinzel', serif; }
