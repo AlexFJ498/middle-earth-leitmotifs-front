@@ -65,7 +65,6 @@ The application follows a clean architecture pattern with clear separation of co
   - `groupDetail/` - Detailed view of themes within a group
   - `about/` - Project information
   - `layout/` - Application layout and navigation
-  - `dev/` - Development tools (theme editor)
 
 ### Shared Components (`src/components/`)
 - **Reusable UI:** Common components like `MarkdownText`, `TipSpotifySignIn`, and icon components
@@ -131,11 +130,6 @@ npm run start
 
 The application will be available at http://localhost:3000 and will automatically open in your browser.
 
-### Using Make (optional)
-```powershell
-make start
-```
-
 ## Building
 
 ### Production Build
@@ -146,12 +140,6 @@ npm run build
 ### Preview Production Build
 ```powershell
 npm run preview
-```
-
-### Using Make
-```powershell
-make build  # Install deps + build
-make compile  # Build only
 ```
 
 ## Testing
@@ -168,11 +156,6 @@ npm run cy:open  # Open Cypress UI
 npm run cy:run   # Run headlessly
 ```
 
-### Using Make
-```powershell
-make test
-```
-
 ### Test Structure
 - **Unit tests:** Located in `tests/` directory
 - **E2E tests:** Located in `tests/e2e/tests/`
@@ -187,12 +170,6 @@ npm run lint      # Check ESLint + Stylelint
 npm run lint:fix  # Auto-fix issues
 ```
 
-### Using Make
-```powershell
-make lint      # Check only
-make lint-fix  # Auto-fix
-```
-
 ### Linting Configuration
 - **ESLint:** Extends Codely TypeScript config + React
 - **Stylelint:** SCSS standard configuration with rational ordering
@@ -205,6 +182,5 @@ MIT License. See `LICENSE`.
 ## Acknowledgments
 
 - You may purchase Doug Adams' book here: [The Music of The Lord of the Rings Films](https://www.amazon.com/Music-Lord-Rings-Films-Comprehensive/dp/0739071572?ref_=ast_author_dp)
-- This project was made from zero following this [course](https://github.com/CodelyTV/go-hexagonal_http_api-course)
+- This project was made following this [course](https://github.com/CodelyTV/react-from_zero_to_best_practices-course) and using this [template](https://github.com/CodelyTV/typescript-react_best_practices-vite_template)
 - UI components powered by [HeroUI](https://heroui.com/) (NextUI successor)
-- Icons from the community and custom implementations
