@@ -10,7 +10,6 @@ export class TrackMother {
 			name: faker.word.sample(),
 			movie: MovieMother.create(),
 			spotifyURL: null,
-				
 			...params,
 		};
 
