@@ -238,7 +238,7 @@ export function GroupDetail(
 						<button
 							type="button"
 							className="group relative rounded-2xl overflow-hidden border border-[rgba(191,167,106,0.35)] shadow-[0_0.375rem_1.125rem_rgba(0,0,0,0.35)] h-full cursor-pointer p-0 transition-all duration-200 ease-out hover:scale-[1.005] hover:border-[var(--color-gold)] hover:shadow-[0_0.45rem_1.25rem_rgba(0,0,0,0.4)]"
-							aria-label="Ver imagen a tamaño completo"
+							aria-label="View full size image"
 							onClick={() => setIsImageModalOpen(true)}
 						>
 							<img src={imageSrc} alt={`${group.name} cover`} loading="lazy" className="w-full h-64 object-cover lg:h-full" />
