@@ -312,7 +312,7 @@ export function GroupDetail(
 		>
 			<button
 				type="button"
-				aria-label="Cerrar modal"
+				aria-label="Close modal"
 				className="absolute inset-0 bg-black/70"
 				onClick={() => setIsImageModalOpen(false)}
 			/>
