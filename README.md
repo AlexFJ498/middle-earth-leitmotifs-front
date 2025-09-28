@@ -4,16 +4,12 @@ A React web application for discovering and exploring the leitmotifs in Howard S
 
 ## Table of Contents
 - [About this project](#about-this-project)
+- [Backend API](#backend-api)
 - [Project overview](#project-overview)
 - [Tech stack](#tech-stack)
 - [Architecture](#architecture)
-- [Routes](#routes)
-- [Setup](#setup)
-- [Configuration](#configuration)
-- [Running locally](#running-locally)
-- [Building](#building)
-- [Testing](#testing)
-- [Linting](#linting)
+- [Getting started](#getting-started)
+- [Development](#development)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
 
@@ -28,6 +24,14 @@ Music compositions and track titles are the property of Howard Shore and the res
 No sheet music or film audio is hosted; embedded players link only to official Spotify releases. Images on this site were generated using AI and serve only as illustrative placeholders; they are not official artwork.
 
 The thematic names and structure presented here are derived from Doug Adams' book "The Music of The Lord of the Rings Films". All original naming remains the property of the author. The brief descriptions were written specifically for this site and are intentionally limited.
+
+## Backend API
+
+This frontend application requires the Middle‑earth Leitmotifs API to function properly.
+
+**Backend Repository:** [middle-earth-leitmotifs-api](https://github.com/AlexFJ498/middle-earth-leitmotifs-api)
+
+Please refer to the backend repository for setup instructions and API documentation.
 
 ## Project overview
 
@@ -85,15 +89,7 @@ Business logic is encapsulated in custom hooks:
 - `useThemesByGroup.ts` - Handles theme data for specific groups
 - `useGroup.tsx` - Individual group data management
 
-## Routes
-
-- **`/`** - Home page with project introduction
-- **`/themes`** - Browse all leitmotif groups
-- **`/themes/:groupId`** - View themes within a specific group  
-- **`/about`** - About the project and acknowledgments
-- **`*`** - Catch‑all redirects to home
-
-## Setup
+## Getting started
 
 ### Requirements
 - Node.js 20.x or higher
@@ -104,14 +100,13 @@ Business logic is encapsulated in custom hooks:
 npm install
 ```
 
-## Configuration
+### Configuration
 
-Configuration is handled through environment variables using Vite's built‑in environment system:
+Configuration is handled through environment variables using Vite's built‑in environment system.
 
-### Environment Variables
+**Environment Variables:**
 - **`VITE_API_URL`** - Backend API base URL (defaults to `http://localhost:8080`)
 
-### Configuration Files
 Create a `.env.local` file for local development:
 ```properties
 VITE_API_URL=http://localhost:8080
@@ -119,9 +114,8 @@ VITE_API_URL=http://localhost:8080
 
 For production, set `VITE_API_URL` to your deployed backend URL.
 
-## Running locally
+### Running locally
 
-### Development Server
 ```powershell
 npm start
 # or
@@ -130,50 +124,51 @@ npm run start
 
 The application will be available at http://localhost:3000 and will automatically open in your browser.
 
-## Building
+### Building
 
-### Production Build
 ```powershell
-npm run build
+npm run build # Production build
+npm run preview # Preview production build
 ```
 
-### Preview Production Build
-```powershell
-npm run preview
-```
+## Development
 
-## Testing
+### Routes
+- **`/`** - Home page with project introduction
+- **`/themes`** - Browse all leitmotif groups
+- **`/themes/:groupId`** - View themes within a specific group  
+- **`/about`** - About the project and acknowledgments
+- **`*`** - Catch‑all redirects to home
 
-### Unit Tests (Jest + Testing Library)
+### Testing
+**Unit Tests (Jest + Testing Library):**
 ```powershell
 npm test        # Run in watch mode
-npm run test    # Run in watch mode
 ```
 
-### End‑to‑End Tests (Cypress)
+**End‑to‑End Tests (Cypress)**
 ```powershell
 npm run cy:open  # Open Cypress UI
 npm run cy:run   # Run headlessly
 ```
 
-### Test Structure
-- **Unit tests:** Located in `tests/` directory
-- **E2E tests:** Located in `tests/e2e/tests/`
-- **Test helpers:** Mother objects for test data generation
-- **Setup:** `tests/setupTests.ts` configures Jest environment
+**Test Structure:**
+- Unit tests: Located in `tests/` directory
+- E2E tests: Located in `tests/e2e/tests/`
+- Test helpers: Mother objects for test data generation
+- Setup: `tests/setupTests.ts` configures Jest environment
 
-## Linting
+### Linting
 
-### Run Linters
 ```powershell
 npm run lint      # Check ESLint + Stylelint
 npm run lint:fix  # Auto-fix issues
 ```
 
-### Linting Configuration
-- **ESLint:** Extends Codely TypeScript config + React
-- **Stylelint:** SCSS standard configuration with rational ordering
-- **EditorConfig:** Consistent formatting across editors
+**Configuration:**
+- ESLint: Extends Codely TypeScript config + React
+- Stylelint: SCSS standard configuration with rational ordering
+- EditorConfig: Consistent formatting across editors
 
 ## License
 
