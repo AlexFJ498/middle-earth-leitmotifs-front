@@ -273,9 +273,7 @@ export function GroupDetail(
 										byCategory.set(key, { id: key, name: t.category.name, items: [t] });
 									}
 								});
-								const orderedCategories = Array.from(byCategory.values())
-									.sort((a, b) => a.name.localeCompare(b.name))
-									.map(cat => ({ ...cat, items: cat.items.slice().sort((a, b) => a.name.localeCompare(b.name)) }));
+								const orderedCategories = Array.from(byCategory.values());
 
 								const renderTheme = (t: Theme) => (
 									<ThemeCard key={t.id} theme={t} isOpen={isExpanded(t.id)} onToggle={() => toggleExpanded(t.id)} />
@@ -285,7 +283,7 @@ export function GroupDetail(
 									<div className="space-y-8">
 										{uncategorized.length > 0 && (
 											<ul className="space-y-4">
-												{uncategorized.slice().sort((a, b) => a.name.localeCompare(b.name)).map(renderTheme)}
+												{uncategorized.map(renderTheme)}
 											</ul>
 										)}
 
