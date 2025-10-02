@@ -114,7 +114,10 @@
 
 .descWrapper { border-radius: 1rem; overflow: hidden; }
 .descPanel {
-  display: flex; flex-direction: column; justify-content: center; gap: 0.875rem;
+  display: flex; 
+	flex-direction: column; 
+	justify-content: center; 
+	gap: 0.875rem;
   padding: 2rem;
   border-radius: 1rem;
   background: var(--panel-gradient);

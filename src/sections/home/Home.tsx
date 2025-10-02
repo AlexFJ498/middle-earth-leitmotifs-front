@@ -43,17 +43,17 @@ export function Home() {
 				<FeatureCard
 					title="First Appearance"
 					desc="Find the track and moment where each theme first emerges."
-					icon={<span aria-hidden className="text-2xl">🎬</span>}
+					icon={<span aria-hidden className="text-xl md:text-2xl">🎬</span>}
 				/>
 				<FeatureCard
 					title="Thematic Structure"
 					desc="Connect motives to their groups and categories to understand their relationships."
-					icon={<span aria-hidden className="text-2xl">🧭</span>}
+					icon={<span aria-hidden className="text-xl md:text-2xl">🧭</span>}
 				/>
 				<FeatureCard
 					title="Narrative Meaning"
 					desc="Discover the meaning of each theme and its role in the narrative."
-					icon={<span aria-hidden className="text-2xl">📜</span>}
+					icon={<span aria-hidden className="text-xl md:text-2xl">📜</span>}
 				/>
 			</section>
 			</div>
@@ -65,11 +65,11 @@ function FeatureCard({ title, desc, icon }: { readonly title: string; readonly d
 	return (
 		<div className="group relative overflow-hidden rounded-xl border border-[rgba(191,167,106,0.35)] bg-[var(--panel-gradient),var(--color-background)] p-5 md:p-6 shadow-[0_0.25rem_0.875rem_rgba(0,0,0,0.25)] transition-all duration-200 ease-out hover:-translate-y-1.5 hover:shadow-[0_0.5rem_1.375rem_rgba(0,0,0,0.45)] hover:border-[var(--color-gold)]">
 			<div aria-hidden className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-80 transition-opacity duration-200 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0)_55%)]" />
-			<div className="flex items-start gap-3 mb-3">
-				<div className="shrink-0 h-11 w-11 rounded-lg bg-[rgba(191,167,106,0.12)] text-[var(--color-gold-soft)] flex items-center justify-center border border-[rgba(191,167,106,0.35)] transition-colors">
+			<div className="flex items-start gap-3 md:flex-col md:gap-2 xl:flex-row mb-3">
+				<div className="shrink-0 h-10 w-10 md:h-11 md:w-11 rounded-lg bg-[rgba(191,167,106,0.12)] text-[var(--color-gold-soft)] flex items-center justify-center border border-[rgba(191,167,106,0.35)] transition-colors">
 					{icon}
 				</div>
-				<h3 className="text-lg font-semibold tracking-wide text-[var(--color-gold)] group-hover:text-[var(--color-gold-soft)] transition-colors m-0">
+				<h3 className="flex-1 min-w-0 leading-tight m-0 font-semibold tracking-wide text-[var(--color-gold)] group-hover:text-[var(--color-gold-soft)] text-base md:text-[1.05rem] xl:text-lg transition-colors">
 					{title}
 				</h3>
 			</div>
