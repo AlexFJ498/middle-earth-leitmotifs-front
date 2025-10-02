@@ -1,7 +1,7 @@
 export function TipSpotifySignIn() {
 	return (
 		<p className="mt-4 mx-auto max-w-2xl text-sm leading-relaxed text-foreground/75 text-center">
-			Tip: For the best playback experience, sign in to Spotify in this browser.{" "}
+			Tip: For the best playback experience, use a desktop browser and sign in to Spotify. On mobile, switch your browser to desktop site mode.{" "}
 			<a
 				href="https://accounts.spotify.com/login"
 				target="_blank"
