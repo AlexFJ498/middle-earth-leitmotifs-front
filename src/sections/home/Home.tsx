@@ -17,7 +17,7 @@ export function Home() {
 						The musical themes of Middle-earth
 					</h1>
 					<p className="mt-6 mx-auto max-w-2xl text-lg leading-relaxed text-foreground/85">
-						Explore the leitmotifs of Howard Shore's award-winning scores for <span className="font-semibold">The Lord of the Rings</span> trilogy—described and organized with reference to Doug Adams's work. A clear, visual way to navigate themes: their first appearances, narrative roles, and thematic relationships.
+						Explore the leitmotifs of Howard Shore's award-winning scores for <span className="font-semibold">The Lord of the Rings</span> trilogy—described and organized with reference to Doug Adams' work. A clear, visual way to navigate themes: their first appearances, narrative roles, and thematic relationships.
 					</p>
 
 					<TipSpotifySignIn />
