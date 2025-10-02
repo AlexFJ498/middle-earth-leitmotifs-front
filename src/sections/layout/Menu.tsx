@@ -1,12 +1,38 @@
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@heroui/react";
 import { NavLink, useLocation } from "react-router-dom";
+import { useEffect, useRef } from "react";
 
 export function Menu() {
 	const location = useLocation();
 	const themesActiveOverride = location.pathname.startsWith('/groups') || location.pathname.startsWith('/themes');
+	const wrapperRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const el = wrapperRef.current;
+		const update = () => {
+			const h = el?.offsetHeight ?? 0;
+			document.documentElement.style.setProperty('--app-navbar-h', h ? `${h}px` : '');
+		};
+		update();
+		let ro: ResizeObserver | undefined;
+		if ('ResizeObserver' in window && el) {
+			ro = new ResizeObserver(update);
+			ro.observe(el);
+		} else {
+			const onResize = () => update();
+			window.addEventListener('resize', onResize);
+		}
+		const onLoad = () => update();
+		window.addEventListener('load', onLoad);
+		return () => {
+			ro?.disconnect();
+			window.removeEventListener('load', onLoad);
+		};
+	}, [location.pathname]);
 
 	return (
-		<Navbar className="sticky top-0 z-50 border-b border-[rgba(191,167,106,0.35)] bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/70 px-4 md:px-6 font-cinzel">
+		<div ref={wrapperRef} className="fixed inset-x-0 top-0 z-50 w-full border-b border-[rgba(191,167,106,0.35)] bg-background backdrop-blur supports-[backdrop-filter]:bg-background/65">
+			<Navbar className="bg-transparent px-4 md:px-6 font-cinzel">
 			<NavbarBrand className="min-w-0">
 				<NavLink
 					to="/"
@@ -43,6 +69,8 @@ export function Menu() {
 					</NavLink>
 				</NavbarItem>
 			</NavbarContent>
-		</Navbar>
+			</Navbar>
+			<div className="h-px bg-gradient-to-r from-transparent via-[var(--color-gold)]/40 to-transparent" />
+		</div>
 	);
 }

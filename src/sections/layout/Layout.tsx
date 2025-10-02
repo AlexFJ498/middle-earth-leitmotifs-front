@@ -10,8 +10,7 @@ export function Layout() {
 			<TopBarProgressByLocation />
 			<div className="min-h-screen flex flex-col bg-background text-foreground">
 				<Menu />
-
-				<div className="h-px bg-gradient-to-r from-transparent via-[var(--color-gold)]/40 to-transparent" />
+				<div style={{ height: 'var(--app-navbar-h, 4rem)' }} />
 
 				<main id="main-content" className="relative flex-1">
 					<div className="mx-auto max-w-8xl p-4 md:p-6 lg:p-8">
