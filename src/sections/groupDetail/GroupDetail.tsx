@@ -62,27 +62,24 @@ const ThemeCard = ({ theme: t, isOpen, onToggle }: ThemeCardProps) => {
 	};
 
 	const getSpotifyEmbedSrc = (): string | null => {
-		const raw: unknown = (t.firstHeard as any)?.spotifyURL ?? (t.firstHeard as any)?.spotifyId;
-		if (typeof raw !== "string" || !raw.trim()) return null;
+		const raw = t.firstHeard.spotifyURL ?? "";
 		const value = raw.trim();
-		let id: string | null = null;
-		if (/^https?:\/\//i.test(value)) {
-			try {
-				const u = new URL(value);
-				// Matches /track/{id} or /intl-xx/track/{id}
-				const re = /^\/(?:intl-[^/]+\/)?track\/([a-zA-Z0-9]+)$/;
-				const m = re.exec(u.pathname);
-				id = m?.[1] ?? null;
-			} catch {
-				id = null;
-			}
-		} else if (/^[a-zA-Z0-9]+$/.test(value)) {
-			id = value;
+		let id: string | null;
+		try {
+			const url = new URL(value);
+			// Matches /track/{id} or /intl-xx/track/{id}
+			const re = /^\/(?:intl-[^/]+\/)?track\/([a-zA-Z0-9]+)$/;
+			const m = re.exec(url.pathname);
+			id = m?.[1] ?? null;
+		} catch {
+			id = null;
 		}
 		if (!id) return null;
 		const startFrag = Number.isFinite(t.firstHeardStart) ? `?t=${t.firstHeardStart}` : "";
 		return `https://open.spotify.com/embed/track/${id}${startFrag}`;
 	};
+
+	const spotifyEmbedSrc = getSpotifyEmbedSrc();
 
 	return (
 		<li className="list-none">
@@ -120,10 +117,10 @@ const ThemeCard = ({ theme: t, isOpen, onToggle }: ThemeCardProps) => {
 						className={styles.contentClip}
 					>
 						<div className={`${styles.content} ${isOpen ? styles.contentOpen : styles.contentClosed}`}>
-							{isOpen && getSpotifyEmbedSrc() && (
+							{isOpen && spotifyEmbedSrc !== null && (
 								<iframe
 									title={`Spotify player for ${t.firstHeard?.name ?? t.name}`}
-									src={getSpotifyEmbedSrc()!}
+									src={spotifyEmbedSrc}
 									width="100%"
 									height="152"
 									style={{ border: 0 }}

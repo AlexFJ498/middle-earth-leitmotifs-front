@@ -57,7 +57,7 @@ export class ApiThemeRepository implements ThemeRepository {
 	}
 
 	async findByGroupId(groupId: string): Promise<Theme[]> {
-		const response = await fetch(`${this.baseUrl}/themes/group/${groupId}`, {
+		const response = await fetch(`${this.baseUrl}/groups/${groupId}/themes`, {
 			headers: {
 				"Content-Type": "application/json",
 			},
