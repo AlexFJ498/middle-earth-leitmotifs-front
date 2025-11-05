@@ -15,7 +15,7 @@ export function Menu() {
 		};
 		update();
 		let ro: ResizeObserver | undefined;
-		if ('ResizeObserver' in window && el) {
+		if ('ResizeObserver' in globalThis.window && el) {
 			ro = new ResizeObserver(update);
 			ro.observe(el);
 		} else {

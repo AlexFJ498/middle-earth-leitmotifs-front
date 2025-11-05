@@ -50,6 +50,7 @@ html { font-size: 125%; box-sizing: border-box; }
 @media (max-width: 480px) {
   html { font-size: 100%; } /* 16px */
 }
+
 /* Prevent horizontal scroll issues on mobile */
 html, body { overflow-x: hidden; }
 body { width: 100%; background-color: var(--color-background); color: var(--color-foreground); font-family: 'Lora', serif; }

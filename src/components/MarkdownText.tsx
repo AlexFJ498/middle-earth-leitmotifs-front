@@ -50,8 +50,8 @@ type Props = {
 
 export function MarkdownText({ text, className }: Props): React.ReactElement {
 	const normalizedText = (text ?? "")
-    	.replace(/\r\n/g, "\n")
-    	.replace(/\\n/g, "\n");
+		.replaceAll("\r\n", "\n")
+		.replaceAll(String.raw`\n`, "\n");
 
   return (
 	<div className={className}>
