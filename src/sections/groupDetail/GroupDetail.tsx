@@ -14,13 +14,14 @@ type ThemeCardProps = { theme: Theme; isOpen: boolean; onToggle: () => void };
 const ThemeCard = ({ theme: t, isOpen, onToggle }: ThemeCardProps) => {
 	const contentRef = useRef<HTMLDivElement>(null);
 	const revealRef = useRef<HTMLDivElement>(null);
-	const [isRevealed, setIsRevealed] = useState(false);
 	const [maxH, setMaxH] = useState(0);
+	const [isRevealed, setIsRevealed] = useState(false);
     const [isPressed, setIsPressed] = useState(false);
 	
 	useEffect(() => {
 		const el = contentRef.current;
 		if (!el) return;
+		
 		setMaxH(el.scrollHeight);
 		if (isOpen) {
 			requestAnimationFrame(() => {
@@ -33,18 +34,23 @@ const ThemeCard = ({ theme: t, isOpen, onToggle }: ThemeCardProps) => {
 	useEffect(() => {
 		const node = revealRef.current;
 		if (!node) return;
-		const prefersReduced = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+		// Check if the user has requested reduced motion
+		const prefersReduced = globalThis.window !== undefined && globalThis.window.matchMedia && globalThis.window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 		if (prefersReduced) {
 			setIsRevealed(true);
 			return;
 		}
+		
+		// Use IntersectionObserver to reveal when in view
 		const io = new IntersectionObserver(([entry]) => {
 			if (entry.isIntersecting) {
 				setIsRevealed(true);
 				io.unobserve(entry.target);
 			}
-		}, { threshold: 0.5 });
+		}, { threshold: 0.5 }); // 50% visible
 		io.observe(node);
+		
 		return () => io.disconnect();
 	}, []);
 
@@ -177,9 +183,9 @@ export function GroupDetail(
 		lastFocusedRef.current = (document.activeElement as HTMLElement) ?? null;
 		setTimeout(() => closeBtnRef.current?.focus(), 0);
 
-		window.addEventListener("keydown", onKey);
+		globalThis.window.addEventListener("keydown", onKey);
 		return () => {
-			window.removeEventListener("keydown", onKey);
+			globalThis.window.removeEventListener("keydown", onKey);
 			document.body.style.overflow = prevOverflow;
 			lastFocusedRef.current?.focus?.();
 		};
@@ -262,8 +268,8 @@ export function GroupDetail(
 									interface CategoryBucket { id: string; name: string; items: Theme[] }
 									const uncategorized: Theme[] = themes.filter((t: Theme) => !t.category);
 									const byCategory = new Map<string, CategoryBucket>();
-									themes.forEach((t: Theme) => {
-										if (!t.category) return;
+									for (const t of themes) {
+										if (!t.category) continue;
 										const key = t.category.id;
 										const existing = byCategory.get(key);
 										if (existing) {
@@ -271,7 +277,7 @@ export function GroupDetail(
 										} else {
 											byCategory.set(key, { id: key, name: t.category.name, items: [t] });
 										}
-									});
+									}
 									const orderedCategories = Array.from(byCategory.values());
 
 									const renderTheme = (t: Theme) => (
