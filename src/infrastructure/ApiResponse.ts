@@ -1,4 +1,4 @@
-interface MoviesResponses {
+export interface MoviesResponses {
 	id  : string;
 	name: string;
 }
@@ -31,4 +31,12 @@ export interface ThemesResponses {
 	first_heard_start: number;
 	first_heard_end  : number;
 	category         : CategoriesResponses;
+}
+
+export interface TracksThemesResponses {
+	track      : TracksResponses;
+	theme      : ThemesResponses;
+	start_second: number;
+	end_second  : number;
+	is_variant  : boolean;
 }

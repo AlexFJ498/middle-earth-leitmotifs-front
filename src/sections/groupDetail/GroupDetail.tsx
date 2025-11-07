@@ -8,6 +8,7 @@ import { useThemesByGroup } from "../groupsList/useThemesByGroup";
 import { MarkdownText } from "../../components/MarkdownText";
 import { TipSpotifySignIn } from "../../components/TipSpotifySignIn";
 import styles from "./GroupDetail.module.scss";
+import { getSpotifyEmbedSrc } from "../../components/SpotifyIFrame";
 
 type ThemeCardProps = { theme: Theme; isOpen: boolean; onToggle: () => void };
 
@@ -67,25 +68,7 @@ const ThemeCard = ({ theme: t, isOpen, onToggle }: ThemeCardProps) => {
 		return `${m}:${s.toString().padStart(2, "0")}`;
 	};
 
-	const getSpotifyEmbedSrc = (): string | null => {
-		const raw = t.firstHeard.spotifyURL ?? "";
-		const value = raw.trim();
-		let id: string | null;
-		try {
-			const url = new URL(value);
-			// Matches /track/{id} or /intl-xx/track/{id}
-			const re = /^\/(?:intl-[^/]+\/)?track\/([a-zA-Z0-9]+)$/;
-			const m = re.exec(url.pathname);
-			id = m?.[1] ?? null;
-		} catch {
-			id = null;
-		}
-		if (!id) return null;
-		const startFrag = Number.isFinite(t.firstHeardStart) ? `?t=${t.firstHeardStart}` : "";
-		return `https://open.spotify.com/embed/track/${id}${startFrag}`;
-	};
-
-	const spotifyEmbedSrc = getSpotifyEmbedSrc();
+	const spotifyEmbedSrc = getSpotifyEmbedSrc(t);
 
 	return (
 		<li className="list-none">

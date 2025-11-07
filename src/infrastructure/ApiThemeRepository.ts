@@ -4,7 +4,7 @@ import { toDomainGroup } from "./ApiGroupRepository";
 import { ThemesResponses } from "./ApiResponse";
 import { toDomainTrack } from "./ApiTrackRepository";
 
-function toDomainTheme(dto: ThemesResponses): Theme {
+export function toDomainTheme(dto: ThemesResponses): Theme {
 	return {
 		id             : dto.id,
 		name           : dto.name,
