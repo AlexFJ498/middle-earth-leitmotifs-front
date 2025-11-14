@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import styles from "./Tracks.module.scss";
 import type { TrackThemeRepository } from "../../domain/TrackThemeRepository";
 import { useMovies } from "./useMovies";
@@ -19,11 +19,13 @@ export function Tracks(
 		readonly trackThemeRepository: TrackThemeRepository;
 	}) {
 	// State for selections
-	const [selectedMovieId, setSelectedMovieId] = useState<string | null>(null);
-	const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
-	const [currentSecond, setCurrentSecond]     = useState<number>(0);
-	const [currentUri, setCurrentUri]           = useState<string>("");
-	const [seconds, setSeconds]                 = useState<number>(0);
+	const [selectedMovieId, setSelectedMovieId]   = useState<string | null>(null);
+	const [selectedTrackId, setSelectedTrackId]   = useState<string | null>(null);
+	const [currentSecond, setCurrentSecond]       = useState<number>(0);
+	const [currentUri, setCurrentUri]             = useState<string>("");
+	const [seconds, setSeconds]                   = useState<number>(0);
+	const [pendingScrollIdx, setPendingScrollIdx] = useState<number | null>(null);
+	const lastActiveIdxRef                        = useRef<number | null>(null);
 
 	// Data hooks
 	const { movies, isLoadingMovies }        = useMovies(movieRepository);
@@ -47,6 +49,53 @@ export function Tracks(
 		setSelectedTrackId(trackId);
 		setCurrentUri(spotifyURL ?? "");
 	};
+
+	useEffect(() => {
+		if (pendingScrollIdx === null) return;
+		const idx    = pendingScrollIdx;
+		const listEl = document.querySelector(`.${styles.themeList}`);
+		if (!(listEl instanceof HTMLElement)) {
+			setPendingScrollIdx(null);
+			return;
+		}
+		const el = listEl.querySelector(`[data-idx="${idx}"]`);
+		if (!(el instanceof HTMLElement)) {
+			setPendingScrollIdx(null);
+			return;
+		}
+
+		const listRect      = listEl.getBoundingClientRect();
+		const elRect        = el.getBoundingClientRect();
+		const elTopRelative = elRect.top - listRect.top;
+		const rowHeight     = el.clientHeight || elRect.height || 0;
+
+		let desiredTop = listEl.scrollTop + elTopRelative - rowHeight - 6;
+
+		const maxScroll = Math.max(0, listEl.scrollHeight - listEl.clientHeight);
+		desiredTop = Math.min(Math.max(0, desiredTop), maxScroll);
+		listEl.scrollTo({ top: desiredTop, behavior: 'smooth' });
+		setPendingScrollIdx(null);
+	}, [pendingScrollIdx]);
+
+	useEffect(() => {
+		if (!tracksThemes || tracksThemes.length === 0) {
+			lastActiveIdxRef.current = null;
+			return;
+		}
+		const activeIdx = tracksThemes.findIndex((tt) =>
+			currentUri === tt.track.spotifyURL &&
+			currentSecond >= tt.startSecond &&
+			currentSecond <= tt.endSecond
+		);
+		if (activeIdx === -1) {
+			lastActiveIdxRef.current = null;
+			return;
+		}
+		if (lastActiveIdxRef.current !== activeIdx) {
+			setPendingScrollIdx(activeIdx);
+			lastActiveIdxRef.current = activeIdx;
+		}
+	}, [tracksThemes, currentUri, currentSecond]);
 
 	return (
 		<div className={styles.container}>
@@ -77,13 +126,15 @@ export function Tracks(
 						))}
 					</div>
 
-					<SpotifyEmbed uri={currentUri} onTimeUpdate={setCurrentSecond} seconds={seconds} />
+					<div className={styles.embedSpacer}>
+						<SpotifyEmbed uri={currentUri} onTimeUpdate={setCurrentSecond} seconds={seconds} />
+					</div>
 
 					{/* Main two panes */}
 					<div className={styles.mainGrid}>
 						{/* Left: tracks list */}
 						<section className={`${styles.pane} ${styles.leftPane}`} aria-label="Tracks list">
-							<div className={styles.tracksHeader}>Tracks</div>
+							<div className={styles.tracksHeader}>TRACKS</div>
 							<div className={styles.tracksScroll}>
 								{(!selectedMovieId && !isLoadingTracksByMovie) && (
 									<div className={styles.emptyBox}>Select a movie to see its tracks</div>
@@ -123,57 +174,67 @@ export function Tracks(
 
 						{/* Right: themes of selected track */}
 						<section className={`${styles.pane} ${styles.rightPane}`} aria-label="Themes for selected track">
-							{!selectedTrackId && (
-								<div className={styles.emptyBox}>Select a track to view its themes</div>
-							)}
+							<div className={`${styles.tracksHeader} ${styles.themesHeader}`}>
+								<span className={styles.currentTimeChip}>{formatTime(currentSecond)}</span>
+								<span>THEMES</span>
+							</div>
+							<div className={styles.rightPaneInner}>
+								{(!selectedTrackId) && (
+									<div className={styles.emptyBox}>Select a track to view its themes</div>
+								)}
 
-							{selectedTrackId && isLoadingThemes && (
-								<div className="grid" style={{ gap: "0.75rem" }}>
-									{Array.from({ length: 5 }).map((_, i) => (
-										<div key={i} className={`${styles.skeleton} ${styles.lineSkeleton}`} style={{ height: "2.25rem" }} />
-									))}
-								</div>
-							)}
-
-							{selectedTrackId && !isLoadingThemes && (
-								tracksThemes.length === 0 ? (
-									<div className={styles.emptyBox}>No themes found for this track.</div>
-								) : (
-									<div className={styles.themeList}>
-										{tracksThemes.map((tt) => {
-											const start = formatTime(tt.startSecond);
-											const end = formatTime(tt.endSecond);
-											const active =
-												currentUri === tt.track.spotifyURL &&
-												currentSecond >= tt.startSecond && 
-												currentSecond <= tt.endSecond;
-											return (
-												<div
-													key={`${tt.track.id}-${tt.theme.id}-${tt.startSecond}`}
-													className={styles.themeRow}
-													data-active={active ? "true" : "false"}
-												>
-													<span className={styles.timeChip}>{start}<span className={styles.dash}>–</span>{end}</span>
-													<button
-														type="button"
-														className={styles.themeItem}
-														aria-label={`Theme ${tt.theme.name}${tt.isVariant ? ' (variant)' : ''}`}
-														aria-pressed={active}
-														onClick={() => {
-															if (tt.track.spotifyURL) {
-																setSeconds(tt.startSecond);
-															}
-														}}
-													>
-														<span className={styles.themeName}>{tt.theme.name}</span>
-														{tt.isVariant && <span className={styles.variantBadge}>VARIANT</span>}
-													</button>
-												</div>
-											);
-										})}
+								{selectedTrackId && isLoadingThemes && (
+									<div className="grid" style={{ gap: "0.75rem" }}>
+										{Array.from({ length: 5 }).map((_, i) => (
+											<div key={i} className={`${styles.skeleton} ${styles.lineSkeleton}`} style={{ height: "2.25rem" }} />
+										))}
 									</div>
-								)
-							)}
+								)}
+
+								{selectedTrackId && !isLoadingThemes && (
+									tracksThemes.length === 0 ? (
+										<div className={styles.emptyBox}>No themes found for this track.</div>
+									) : (
+										<div className={styles.themeList}>
+											{tracksThemes.map((tt, idx) => {
+												const start = formatTime(tt.startSecond);
+												const end = formatTime(tt.endSecond);
+												const active =
+													currentUri === tt.track.spotifyURL &&
+													currentSecond >= tt.startSecond && 
+													currentSecond <= tt.endSecond;
+												return (
+													<div
+														key={`${tt.track.id}-${tt.theme.id}-${tt.startSecond}`}
+														className={styles.themeRow}
+														data-active={active ? "true" : "false"}
+														data-idx={idx}
+														>
+														<span className={styles.timeChip}>{start}<span className={styles.dash}>–</span>{end}</span>
+														<button
+															type="button"
+															className={styles.themeItem}
+															aria-label={`Theme ${tt.theme.name}${tt.isVariant ? ' (variant)' : ''}`}
+															aria-pressed={active}
+															onClick={() => {
+																if (tt.track.spotifyURL) {
+																	setCurrentUri(tt.track.spotifyURL);
+																	setSeconds(tt.startSecond);
+																	lastActiveIdxRef.current = idx;
+																	setPendingScrollIdx(idx);
+																}
+															}}
+														>
+															<span className={styles.themeName}>{tt.theme.name}</span>
+															{tt.isVariant && <span className={styles.variantBadge}>VARIANT</span>}
+														</button>
+													</div>
+												);
+											})}
+										</div>
+									)
+								)}
+							</div>
 						</section>
 					</div>
 				</div>
