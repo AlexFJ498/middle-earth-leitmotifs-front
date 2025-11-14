@@ -16,7 +16,7 @@ export function Home() {
 					<h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-[var(--color-gold-soft)] to-[var(--color-gold)] bg-clip-text text-transparent drop-shadow-[0_0.25rem_1.25rem_rgba(0,0,0,0.45)]">
 						The musical themes of Middle-earth
 					</h1>
-					<p className="mt-6 mx-auto max-w-2xl text-lg leading-relaxed text-foreground/85">
+					<p className="mt-6 mx-auto max-w-3xl text-lg leading-relaxed text-foreground/85">
 						Explore the leitmotifs of Howard Shore's award-winning scores for <span className="font-semibold">The Lord of the Rings</span> trilogy—described and organized with reference to Doug Adams' work. A clear, visual way to navigate themes: their first appearances, narrative roles, and thematic relationships.
 					</p>
 
@@ -25,13 +25,19 @@ export function Home() {
 					<div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
 						<Link
 							to="/themes"
-							className="inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-base font-medium bg-[var(--color-gold-soft)] text-[#1d1a11] shadow-[0_0.25rem_1.125rem_rgba(0,0,0,0.35)] hover:shadow-[0_0.5rem_1.75rem_rgba(0,0,0,0.45)] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-gold)]/60"
+							className="inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-base font-medium bg-[var(--color-gold)] text-[#1d1a11] shadow-[0_0.25rem_1.125rem_rgba(0,0,0,0.35)] hover:shadow-[0_0.5rem_1.75rem_rgba(0,0,0,0.45)] hover:filter hover:brightness-110 hover:scale-105 active:scale-95 transition transform duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-gold)]/60"
 						>
 							Browse Themes
 						</Link>
 						<Link
+							to="/tracks"
+							className="inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-base font-medium bg-[var(--color-gold)] text-[#1d1a11] shadow-[0_0.25rem_1.125rem_rgba(0,0,0,0.35)] hover:shadow-[0_0.5rem_1.75rem_rgba(0,0,0,0.45)] hover:filter hover:brightness-110 hover:scale-105 active:scale-95 transition transform duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-gold)]/60"
+						>
+							Browse Tracks
+						</Link>
+						<Link
 							to="/about"
-							className="inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-base font-medium border border-[var(--color-gold-soft)] text-[var(--color-gold-soft)] hover:bg-[var(--color-gold-soft)]/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-gold)]/60"
+							className="inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-base font-medium border border-[var(--color-gold-soft)] text-[var(--color-gold-soft)] hover:bg-[var(--color-gold-soft)]/10 hover:filter hover:brightness-110 active:scale-95 transition transform duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-gold)]/60"
 						>
 							About the Project
 						</Link>
@@ -39,7 +45,7 @@ export function Home() {
 				</div>
 			</section>
 
-			<section className="mx-auto max-w-6xl px-2 md:px-4 pb-14 grid gap-8 md:grid-cols-3">
+			<section className="mx-auto max-w-6xl px-2 grid gap-4 md:grid-cols-4">
 				<FeatureCard
 					title="First Appearance"
 					desc="Find the track and moment where each theme first emerges."
@@ -54,6 +60,11 @@ export function Home() {
 					title="Narrative Meaning"
 					desc="Discover the meaning of each theme and its role in the narrative."
 					icon={<span aria-hidden className="text-xl md:text-2xl">📜</span>}
+				/>
+				<FeatureCard
+					title="Musical Analysis"
+					desc="Listen to the full tracks and see in real time which leitmotif is sounding."
+					icon={<span aria-hidden className="text-xl md:text-2xl">🎵</span>}
 				/>
 			</section>
 			</div>
