@@ -23,6 +23,7 @@ export function Tracks(
 	const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
 	const [currentSecond, setCurrentSecond]     = useState<number>(0);
 	const [currentUri, setCurrentUri]           = useState<string>("");
+	const [seconds, setSeconds]                 = useState<number>(0);
 
 	// Data hooks
 	const { movies, isLoadingMovies }        = useMovies(movieRepository);
@@ -76,7 +77,7 @@ export function Tracks(
 						))}
 					</div>
 
-					<SpotifyEmbed uri={currentUri} onTimeUpdate={setCurrentSecond} />
+					<SpotifyEmbed uri={currentUri} onTimeUpdate={setCurrentSecond} seconds={seconds} />
 
 					{/* Main two panes */}
 					<div className={styles.mainGrid}>
@@ -158,6 +159,11 @@ export function Tracks(
 														className={styles.themeItem}
 														aria-label={`Theme ${tt.theme.name}${tt.isVariant ? ' (variant)' : ''}`}
 														aria-pressed={active}
+														onClick={() => {
+															if (tt.track.spotifyURL) {
+																setSeconds(tt.startSecond);
+															}
+														}}
 													>
 														<span className={styles.themeName}>{tt.theme.name}</span>
 														{tt.isVariant && <span className={styles.variantBadge}>VARIANT</span>}

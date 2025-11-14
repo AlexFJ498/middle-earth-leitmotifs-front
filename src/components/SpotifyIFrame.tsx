@@ -10,14 +10,17 @@ declare global {
 export default function SpotifyEmbed({
 	uri,
 	onTimeUpdate,
+	seconds = 0,
 }: Readonly<{ 
 	uri: string,
-	onTimeUpdate?: (seconds: number) => void;
+	onTimeUpdate?: (seconds: number) => void,
+	seconds?: number,
 }>): JSX.Element {
 	const iframeRef     = useRef<HTMLDivElement | null>(null);
 	const controllerRef = useRef<any>(null);
 	const apiRef        = useRef<any>(null);
 	const latestUriRef  = useRef<string>(uri);
+	const hasStartedBool = useRef<boolean>(false);
 
 	// Keep the latest URI in a ref to avoid stale-closure issues
 	useEffect(() => {
@@ -55,7 +58,8 @@ export default function SpotifyEmbed({
 
 			IFrameAPI.createController(element, options, (controller: any) => {
 				controllerRef.current = controller;
-				controller.addListener("playback_update", handlePlaybackUpdate);
+				controller.addListener("playback_update", handlePlaybackUpdated);
+				controller.addListener("playback_started", handlePlaybackStarted)
 			});
 		};
 	}, []);
@@ -72,14 +76,33 @@ export default function SpotifyEmbed({
 		const options = { uri, width: "100%", height: "152" };
 		apiRef.current.createController(iframeRef.current, options, (controller: any) => {
 			controllerRef.current = controller;
-			controller.addListener("playback_update", handlePlaybackUpdate);
+			controller.addListener("playback_update", handlePlaybackUpdated);
+			controller.addListener("playback_started", handlePlaybackStarted)
 		});
 	}, [uri]);
 
-	function handlePlaybackUpdate(state: any) {
+	function handlePlaybackStarted() {
+		hasStartedBool.current = true;
+	}
+
+	function handlePlaybackUpdated(state: any) {
 		const seconds = state.data.position / 1000;
 		onTimeUpdate?.(seconds);
 	}
+
+	useEffect(() => {
+		if (controllerRef.current) {
+			if (hasStartedBool.current) {
+				controllerRef.current.seek(seconds);
+			} else {
+				controllerRef.current.play();
+			
+				setTimeout(() => {
+					controllerRef.current.seek(seconds);
+				}, 500);
+			}
+		}
+	}, [seconds]);
 
 	return (
 		<div ref={iframeRef}></div>

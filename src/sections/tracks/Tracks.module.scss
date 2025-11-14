@@ -141,6 +141,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+	cursor: pointer;
 }
 .themeRow[data-active="true"] .themeItem {
 	border-color: rgba(191,167,106,0.65);
