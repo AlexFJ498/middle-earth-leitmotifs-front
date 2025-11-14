@@ -103,6 +103,21 @@ export function Tracks(
 				<div className={styles.panelInner}>
 					<h1 className={styles.title}>Tracks</h1>
 
+					<p className={styles.intro}>
+						Here you can listen to the complete tracks and explore in real time the themes that are sounding at each moment. Select a movie to reveal its tracks, choose a track to view the detected themes, and press play to start the simulation.
+					</p>
+					<p className={styles.intro}>
+						You may listen to the full track or jump directly to a specific theme by clicking it in the list. Some themes are marked as variants — alternate or adapted versions of a main theme.
+					</p>
+					<p className={styles.intro}>
+						To play tracks from this page <span className={styles.highlight}>you must be signed in to Spotify in this browser</span>. On mobile, please switch your browser to desktop site mode. <a href="https://accounts.spotify.com/login" target="_blank" rel="noopener noreferrer" className={styles.link}>Sign in</a>
+					</p>
+					<p className={styles.intro}>
+						The information shown here was compiled from <a href="https://www.jwfan.com/forums/index.php?/topic/27532-the-themes-of-howard-shores-the-lord-of-the-rings-copied-from-musicofmiddelearthcom/" target="_blank" rel="noopener noreferrer">this source</a>. It may not be complete or fully accurate.
+					</p>
+
+					<div className={styles.introDivider} aria-hidden="true" />
+
 					{/* Movies selector */}
 					<div className={styles.moviesBar}>
 						{isLoadingMovies && (
