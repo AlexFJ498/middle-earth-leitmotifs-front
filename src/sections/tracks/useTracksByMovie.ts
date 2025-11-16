@@ -21,6 +21,7 @@ export function useTracksByMovie(repository: TrackRepository, movieId: string): 
 				setTracks(data);
 			})
 			.catch((err) => {
+				console.error('Failed to fetch tracks:', err);
 				setTracks([]);
 			})
 			.finally(() => {
