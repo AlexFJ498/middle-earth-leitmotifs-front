@@ -8,10 +8,15 @@ export function useMovies(repository: MovieRepository): { movies: Movie[]; isLoa
 
 	useEffect(() => {
 		setIsLoadingMovies(true);
-		repository.searchAll().then((data) => {
-			setMovies(data);
-			setIsLoadingMovies(false);
-		});
+		repository.searchAll()
+			.then((data) => {
+				setMovies(data);
+				setIsLoadingMovies(false);
+			})
+			.catch((err) => {
+				console.error('Failed to fetch movies:', err);
+				setIsLoadingMovies(false);
+			});
 	}, [repository]);
 
 	return { movies, isLoadingMovies };
