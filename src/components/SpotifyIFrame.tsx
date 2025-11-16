@@ -77,7 +77,7 @@ export default function SpotifyEmbed({
 		apiRef.current.createController(iframeRef.current, options, (controller: any) => {
 			controllerRef.current = controller;
 			controller.addListener("playback_update", handlePlaybackUpdated);
-			controller.addListener("playback_started", handlePlaybackStarted)
+			controller.addListener("playback_started", handlePlaybackStarted);
 		});
 	}, [uri]);
 
