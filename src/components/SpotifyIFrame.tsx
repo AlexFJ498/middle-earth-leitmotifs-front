@@ -61,6 +61,8 @@ export default function SpotifyEmbed({
 				controller.addListener("playback_update", handlePlaybackUpdated);
 				controller.addListener("playback_started", handlePlaybackStarted);
 			});
+
+			onTimeUpdate?.(0);
 		};
 	}, []);
 
@@ -79,6 +81,8 @@ export default function SpotifyEmbed({
 			controller.addListener("playback_update", handlePlaybackUpdated);
 			controller.addListener("playback_started", handlePlaybackStarted);
 		});
+
+		onTimeUpdate?.(0);
 	}, [uri]);
 
 	function handlePlaybackStarted() {
