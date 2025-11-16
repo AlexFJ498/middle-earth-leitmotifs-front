@@ -110,7 +110,7 @@ export function Tracks(
 						You may listen to the full track or jump directly to a specific theme by clicking it in the list. Some themes are marked as variants — alternate or adapted versions of a main theme.
 					</p>
 					<p className={styles.intro}>
-						To play tracks from this page <span className={styles.highlight}>you must be signed in to Spotify in this browser</span>. On mobile, please switch your browser to desktop site mode. <a href="https://accounts.spotify.com/login" target="_blank" rel="noopener noreferrer" className={styles.link}>Sign in</a>
+						To play tracks from this page <span className={styles.highlight}>you must be signed in to Spotify in this browser</span>. On mobile, please switch your browser to desktop site mode. <a href="https://accounts.spotify.com/login" target="_blank" rel="noopener noreferrer">Sign in</a>
 					</p>
 					<p className={styles.intro}>
 						The information shown here was compiled from <a href="https://www.jwfan.com/forums/index.php?/topic/27532-the-themes-of-howard-shores-the-lord-of-the-rings-copied-from-musicofmiddelearthcom/" target="_blank" rel="noopener noreferrer">this source</a>. It may not be complete or fully accurate.
