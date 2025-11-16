@@ -48,6 +48,8 @@ export function Tracks(
 	const handleSelectTrack = (trackId: string, spotifyURL: string | null) => {
 		setSelectedTrackId(trackId);
 		setCurrentUri(spotifyURL ?? "");
+		setCurrentSecond(0);
+		setSeconds(0);
 	};
 
 	useEffect(() => {
