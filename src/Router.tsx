@@ -4,6 +4,7 @@ import { Layout } from './sections/layout/Layout';
 import { GroupsListFactory } from './sections/groupsList/GroupsListFactory';
 import { GroupDetailFactory } from './sections/groupDetail/GroupDetailFactory';
 import { HomeFactory } from './sections/home/HomeFactory';
+import { TracksFactory } from './sections/tracks/TracksFactory';
 
 const router = createBrowserRouter([
     {
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
 			{
 				path: "/themes/:groupId",
 				element: GroupDetailFactory.create(),
+			},
+			{
+				path: "/tracks",
+				element: TracksFactory.create(),
 			},
             {
                 path: "/about",

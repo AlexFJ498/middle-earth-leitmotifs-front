@@ -8,19 +8,21 @@ import { useThemesByGroup } from "../groupsList/useThemesByGroup";
 import { MarkdownText } from "../../components/MarkdownText";
 import { TipSpotifySignIn } from "../../components/TipSpotifySignIn";
 import styles from "./GroupDetail.module.scss";
+import { getSpotifyEmbedSrc } from "../../components/SpotifyIFrame";
 
 type ThemeCardProps = { theme: Theme; isOpen: boolean; onToggle: () => void };
 
 const ThemeCard = ({ theme: t, isOpen, onToggle }: ThemeCardProps) => {
 	const contentRef = useRef<HTMLDivElement>(null);
 	const revealRef = useRef<HTMLDivElement>(null);
-	const [isRevealed, setIsRevealed] = useState(false);
 	const [maxH, setMaxH] = useState(0);
+	const [isRevealed, setIsRevealed] = useState(false);
     const [isPressed, setIsPressed] = useState(false);
 	
 	useEffect(() => {
 		const el = contentRef.current;
 		if (!el) return;
+		
 		setMaxH(el.scrollHeight);
 		if (isOpen) {
 			requestAnimationFrame(() => {
@@ -33,18 +35,23 @@ const ThemeCard = ({ theme: t, isOpen, onToggle }: ThemeCardProps) => {
 	useEffect(() => {
 		const node = revealRef.current;
 		if (!node) return;
-		const prefersReduced = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+		// Check if the user has requested reduced motion
+		const prefersReduced = globalThis.window !== undefined && globalThis.window.matchMedia && globalThis.window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 		if (prefersReduced) {
 			setIsRevealed(true);
 			return;
 		}
+		
+		// Use IntersectionObserver to reveal when in view
 		const io = new IntersectionObserver(([entry]) => {
 			if (entry.isIntersecting) {
 				setIsRevealed(true);
 				io.unobserve(entry.target);
 			}
-		}, { threshold: 0.5 });
+		}, { threshold: 0.5 }); // 50% visible
 		io.observe(node);
+		
 		return () => io.disconnect();
 	}, []);
 
@@ -61,28 +68,7 @@ const ThemeCard = ({ theme: t, isOpen, onToggle }: ThemeCardProps) => {
 		return `${m}:${s.toString().padStart(2, "0")}`;
 	};
 
-	const getSpotifyEmbedSrc = (): string | null => {
-		const raw: unknown = (t.firstHeard as any)?.spotifyURL ?? (t.firstHeard as any)?.spotifyId;
-		if (typeof raw !== "string" || !raw.trim()) return null;
-		const value = raw.trim();
-		let id: string | null = null;
-		if (/^https?:\/\//i.test(value)) {
-			try {
-				const u = new URL(value);
-				// Matches /track/{id} or /intl-xx/track/{id}
-				const re = /^\/(?:intl-[^/]+\/)?track\/([a-zA-Z0-9]+)$/;
-				const m = re.exec(u.pathname);
-				id = m?.[1] ?? null;
-			} catch {
-				id = null;
-			}
-		} else if (/^[a-zA-Z0-9]+$/.test(value)) {
-			id = value;
-		}
-		if (!id) return null;
-		const startFrag = Number.isFinite(t.firstHeardStart) ? `?t=${t.firstHeardStart}` : "";
-		return `https://open.spotify.com/embed/track/${id}${startFrag}`;
-	};
+	const spotifyEmbedSrc = getSpotifyEmbedSrc(t);
 
 	return (
 		<li className="list-none">
@@ -120,10 +106,10 @@ const ThemeCard = ({ theme: t, isOpen, onToggle }: ThemeCardProps) => {
 						className={styles.contentClip}
 					>
 						<div className={`${styles.content} ${isOpen ? styles.contentOpen : styles.contentClosed}`}>
-							{isOpen && getSpotifyEmbedSrc() && (
+							{isOpen && spotifyEmbedSrc !== null && (
 								<iframe
 									title={`Spotify player for ${t.firstHeard?.name ?? t.name}`}
-									src={getSpotifyEmbedSrc()!}
+									src={spotifyEmbedSrc}
 									width="100%"
 									height="152"
 									style={{ border: 0 }}
@@ -180,9 +166,9 @@ export function GroupDetail(
 		lastFocusedRef.current = (document.activeElement as HTMLElement) ?? null;
 		setTimeout(() => closeBtnRef.current?.focus(), 0);
 
-		window.addEventListener("keydown", onKey);
+		globalThis.window.addEventListener("keydown", onKey);
 		return () => {
-			window.removeEventListener("keydown", onKey);
+			globalThis.window.removeEventListener("keydown", onKey);
 			document.body.style.overflow = prevOverflow;
 			lastFocusedRef.current?.focus?.();
 		};
@@ -265,8 +251,8 @@ export function GroupDetail(
 									interface CategoryBucket { id: string; name: string; items: Theme[] }
 									const uncategorized: Theme[] = themes.filter((t: Theme) => !t.category);
 									const byCategory = new Map<string, CategoryBucket>();
-									themes.forEach((t: Theme) => {
-										if (!t.category) return;
+									for (const t of themes) {
+										if (!t.category) continue;
 										const key = t.category.id;
 										const existing = byCategory.get(key);
 										if (existing) {
@@ -274,7 +260,7 @@ export function GroupDetail(
 										} else {
 											byCategory.set(key, { id: key, name: t.category.name, items: [t] });
 										}
-									});
+									}
 									const orderedCategories = Array.from(byCategory.values());
 
 									const renderTheme = (t: Theme) => (

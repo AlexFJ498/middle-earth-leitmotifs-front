@@ -4,7 +4,7 @@ import { toDomainGroup } from "./ApiGroupRepository";
 import { ThemesResponses } from "./ApiResponse";
 import { toDomainTrack } from "./ApiTrackRepository";
 
-function toDomainTheme(dto: ThemesResponses): Theme {
+export function toDomainTheme(dto: ThemesResponses): Theme {
 	return {
 		id             : dto.id,
 		name           : dto.name,
@@ -57,7 +57,7 @@ export class ApiThemeRepository implements ThemeRepository {
 	}
 
 	async findByGroupId(groupId: string): Promise<Theme[]> {
-		const response = await fetch(`${this.baseUrl}/themes/group/${groupId}`, {
+		const response = await fetch(`${this.baseUrl}/groups/${groupId}/themes`, {
 			headers: {
 				"Content-Type": "application/json",
 			},

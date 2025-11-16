@@ -81,8 +81,11 @@ export function About() {
 							<p className="m-0 text-base md:text-[1.05rem]">
 								The thematic names and structure presented here are derived from Doug Adams' book <i>“The Music of The Lord of the Rings Films”</i>. All original naming remains the property of the author. The brief descriptions were written specifically for this site and are intentionally limited.
 							</p>
-							<p className="mt-3 text-[0.95rem] md:text-base">
+							<p className="m-0 text-base md:text-[1.05rem] mt-3">
 								You may purchase the book here: <a className="underline underline-offset-2 text-[var(--color-gold)] hover:text-[var(--color-gold-soft)]" href="https://www.amazon.com/Music-Lord-Rings-Films-Comprehensive/dp/0739071572?ref_=ast_author_dp" target="_blank" rel="noopener noreferrer">The Music of The Lord of the Rings Films</a>.
+							</p>
+							<p className="m-0 text-base md:text-[1.05rem] mt-3">
+								All information in the Tracks section was compiled from <a className="underline underline-offset-2 text-[var(--color-gold)] hover:text-[var(--color-gold-soft)]" href="https://www.jwfan.com/forums/index.php?/topic/27532-the-themes-of-howard-shores-the-lord-of-the-rings-copied-from-musicofmiddelearthcom/" target="_blank" rel="noopener noreferrer">this source</a> and may not be complete or fully accurate.
 							</p>
 						</section>
 

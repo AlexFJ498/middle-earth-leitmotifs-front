@@ -5,7 +5,7 @@ import styles from "./GroupsList.module.scss";
 export function GroupsListSkeleton() {
   const items = Array.from({ length: 14 });
   return (
-    <div className={styles.gridContainer} role="status" aria-live="polite" aria-busy="true" aria-label="Loading groups">
+    <output className={styles.gridContainer} aria-live="polite" aria-busy="true" aria-label="Loading groups">
       {items.map((_, i) => (
         <div key={i} className={styles.gridItem}>
           <div className={styles.card}>
@@ -15,6 +15,6 @@ export function GroupsListSkeleton() {
           </div>
         </div>
       ))}
-    </div>
+    </output>
   );
 }

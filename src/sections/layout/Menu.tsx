@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 export function Menu() {
 	const location = useLocation();
 	const themesActiveOverride = location.pathname.startsWith('/groups') || location.pathname.startsWith('/themes');
+	const tracksActiveOverride = location.pathname.startsWith('/tracks');
 	const wrapperRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -15,7 +16,7 @@ export function Menu() {
 		};
 		update();
 		let ro: ResizeObserver | undefined;
-		if ('ResizeObserver' in window && el) {
+		if ('ResizeObserver' in globalThis.window && el) {
 			ro = new ResizeObserver(update);
 			ro.observe(el);
 		} else {
@@ -53,6 +54,19 @@ export function Menu() {
 						}}
 					>
 						Themes
+					</NavLink>
+				</NavbarItem>
+				<NavbarItem>
+					<NavLink
+						to="/tracks"
+						className={({ isActive }) => {
+							const base = 'px-3 py-2 rounded-md text-sm';
+							const active = 'text-[var(--color-gold-soft)] underline decoration-[var(--color-gold-soft)] decoration-2 underline-offset-[6px]';
+							const inactive = 'text-[var(--color-gold)] hover:text-[var(--color-gold-soft)]';
+							return `${base} ${(isActive || tracksActiveOverride) ? active : inactive}`;
+						}}
+					>
+						Tracks
 					</NavLink>
 				</NavbarItem>
 				<NavbarItem>
