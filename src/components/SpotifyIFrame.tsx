@@ -97,7 +97,7 @@ export default function SpotifyEmbed({
 	useEffect(() => {
 		if (controllerRef.current) {
 			if (seconds === 0) {
-				seconds = 0.1;
+				seconds = 1;
 			}
 			
 			if (hasStartedBool.current) {
