@@ -20,6 +20,7 @@ export function useTracksThemes(repository: TrackThemeRepository, trackId: strin
 				setTracksThemes(tracksThemes);
 			})
 			.catch((err) => {
+				console.error('Failed to fetch track themes:', err);
 				setTracksThemes([]);
 			})
 			.finally(() => {
