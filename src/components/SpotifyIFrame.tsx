@@ -28,6 +28,7 @@ export default function SpotifyEmbed({
 		// If a controller already exists and uri changed to a non-empty value, load it
 		if (uri && controllerRef.current) {
 			controllerRef.current.loadUri(uri);
+			onTimeUpdate?.(0);
 		}
 	}, [uri]);
 
