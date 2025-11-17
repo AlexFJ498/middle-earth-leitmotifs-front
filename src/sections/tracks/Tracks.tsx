@@ -50,7 +50,7 @@ export function Tracks(
 		setSelectedTrackId(trackId);
 		setCurrentUri(spotifyURL ?? "");
 		setCurrentSecond(0);
-		setSeconds(0);
+		setSeconds(-1);
 		setShouldAutoplay(true);
 	};
 	const handleSeconds = (secs: number) => {
