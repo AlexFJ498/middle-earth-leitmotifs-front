@@ -11,10 +11,14 @@ export default function SpotifyEmbed({
 	uri,
 	onTimeUpdate,
 	seconds = 0,
+	autoplay = false,
+	onAutoplayHandled,
 }: Readonly<{ 
 	uri: string,
 	onTimeUpdate?: (seconds: number) => void,
 	seconds?: number,
+	autoplay?: boolean,
+	onAutoplayHandled?: () => void,
 }>): JSX.Element {
 	const iframeRef     = useRef<HTMLDivElement | null>(null);
 	const controllerRef = useRef<any>(null);
@@ -29,6 +33,11 @@ export default function SpotifyEmbed({
 		if (uri && controllerRef.current) {
 			controllerRef.current.loadUri(uri);
 			onTimeUpdate?.(0);
+			// If parent requested autoplay, try to play now and notify parent
+			if (autoplay && controllerRef.current) {
+				try { controllerRef.current.play(); } catch {}
+				onAutoplayHandled?.();
+			}
 		}
 	}, [uri]);
 
@@ -96,20 +105,27 @@ export default function SpotifyEmbed({
 	}
 
 	useEffect(() => {
-		if (controllerRef.current) {
-			if (seconds === 0) {
-				seconds = 1;
-			}
-			
+		if (seconds === -1) return;
+		if (!controllerRef.current) return;
+		const target = Number.isFinite(seconds) ? seconds : 0;
+
+		if (!autoplay) {
+			// Non-autoplay behavior: only seek if playback already started.
 			if (hasStartedBool.current) {
-				controllerRef.current.seek(seconds);
-			} else {
-				controllerRef.current.play();
-			
-				setTimeout(() => {
-					controllerRef.current.seek(seconds);
-				}, 500);
+				try { controllerRef.current.seek(target); } catch (e) { }
 			}
+			return;
+		}
+
+		// Autoplay requested: try to play then seek (fallback)
+		if (hasStartedBool.current) {
+			try { controllerRef.current.seek(target); } catch (e) { }
+		} else {
+			try { controllerRef.current.play(); } catch (e) { }
+			setTimeout(() => {
+				if (!controllerRef.current) return;
+				try { controllerRef.current.seek(target); } catch (e) { }
+			}, 500);
 		}
 	}, [seconds]);
 

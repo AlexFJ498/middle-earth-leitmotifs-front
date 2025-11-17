@@ -24,6 +24,7 @@ export function Tracks(
 	const [currentSecond, setCurrentSecond]       = useState<number>(0);
 	const [currentUri, setCurrentUri]             = useState<string>("");
 	const [seconds, setSeconds]                   = useState<number>(0);
+	const [shouldAutoplay, setShouldAutoplay]     = useState<boolean>(false);
 	const [pendingScrollIdx, setPendingScrollIdx] = useState<number | null>(null);
 	const lastActiveIdxRef                        = useRef<number | null>(null);
 
@@ -50,6 +51,11 @@ export function Tracks(
 		setCurrentUri(spotifyURL ?? "");
 		setCurrentSecond(0);
 		setSeconds(0);
+		setShouldAutoplay(true);
+	};
+	const handleSeconds = (secs: number) => {
+		setSeconds(secs);
+		setCurrentSecond(secs);
 	};
 
 	useEffect(() => {
@@ -144,7 +150,7 @@ export function Tracks(
 					</div>
 
 					<div className={styles.embedSpacer}>
-						<SpotifyEmbed uri={currentUri} onTimeUpdate={setCurrentSecond} seconds={seconds} />
+						<SpotifyEmbed uri={currentUri} onTimeUpdate={setCurrentSecond} seconds={seconds} autoplay={shouldAutoplay} onAutoplayHandled={() => setShouldAutoplay(false)} />
 					</div>
 
 					{/* Main two panes */}
@@ -236,7 +242,11 @@ export function Tracks(
 															onClick={() => {
 																if (tt.track.spotifyURL) {
 																	setCurrentUri(tt.track.spotifyURL);
-																	setSeconds(tt.startSecond);
+																	handleSeconds(tt.startSecond);
+																	setTimeout(() => {
+																		setSeconds(-1);
+																	}, 500);
+
 																	lastActiveIdxRef.current = idx;
 																	setPendingScrollIdx(idx);
 																}
