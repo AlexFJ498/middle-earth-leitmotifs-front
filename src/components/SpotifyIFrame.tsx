@@ -107,7 +107,9 @@ export default function SpotifyEmbed({
 	useEffect(() => {
 		if (seconds === -1) return;
 		if (!controllerRef.current) return;
-		const target = Number.isFinite(seconds) ? seconds : 0;
+		let target = Number.isFinite(seconds) ? seconds : 0;
+
+		if (seconds === 0) target = 1;
 
 		if (!autoplay) {
 			// Non-autoplay behavior: only seek if playback already started.
