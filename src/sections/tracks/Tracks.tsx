@@ -253,7 +253,7 @@ export function Tracks(
 															}}
 														>
 															<span className={styles.themeName}>{tt.theme.name}</span>
-															{tt.isVariant && <span className={styles.variantBadge}>VARIANT</span>}
+															{tt.isVariant && <span className={styles.variantBadge}>VARIATION</span>}
 														</button>
 													</div>
 												);
