@@ -13,19 +13,30 @@ export function useTracksThemesByTrack(repository: TrackThemeRepository, trackId
 			return;
 		}
 		
+		let cancelled = false;
+		
 		setIsLoadingTrackThemesByTrack(true);
 		repository
 			.findByTrack(trackId)
 			.then((tracksThemes) => {
-				setTracksThemes(tracksThemes);
+				if (!cancelled) {
+					setTracksThemes(tracksThemes);
+				}
 			})
 			.catch((err) => {
-				console.error('Failed to fetch track themes:', err);
-				setTracksThemes([]);
+				if (!cancelled) {
+					setTracksThemes([]);
+				}
 			})
 			.finally(() => {
-				setIsLoadingTrackThemesByTrack(false);
+				if (!cancelled) {
+					setIsLoadingTrackThemesByTrack(false);
+				}
 			});
+		
+		return () => {
+			cancelled = true;
+		};
 	}, [repository, trackId]);
 	return { tracksThemes, isLoadingTrackThemesByTrack };
 }

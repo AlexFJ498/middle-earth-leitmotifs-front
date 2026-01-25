@@ -39,6 +39,17 @@ export function Tracks(
 	const { tracks, isLoadingTracksByMovie } = useTracksByMovie(trackRepository, selectedMovieId ?? "");
 	const { tracksThemes, isLoadingTrackThemesByTrack }  = useTracksThemesByTrack(trackThemeRepository, selectedTrackId ?? "");
 
+	// When movie changes, ensure track is cleared
+	useEffect(() => {
+		if (selectedMovieId && selectedTrackId) {
+			// Check if current track belongs to current movie's tracks
+			const trackExists = tracks.some(t => t.id === selectedTrackId);
+			if (!trackExists && !isLoadingTracksByMovie) {
+				setSelectedTrackId(null);
+			}
+		}
+	}, [selectedMovieId, selectedTrackId, tracks, isLoadingTracksByMovie]);
+
 	// Auto-select from URL trackId param
 	useEffect(() => {
 		if (!trackId || tracks.length === 0) return;
@@ -244,7 +255,7 @@ export function Tracks(
 								<span>THEMES</span>
 							</div>
 							<div className={styles.rightPaneInner}>
-								{(!selectedTrackId) && (
+								{!selectedTrackId && (
 									<div className={styles.emptyBox}>Select a track to view its themes</div>
 								)}
 
