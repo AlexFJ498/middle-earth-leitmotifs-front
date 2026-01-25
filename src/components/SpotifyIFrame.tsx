@@ -4,6 +4,7 @@ import { Theme } from "../domain/Theme";
 declare global {
 	interface Window {
 		onSpotifyIframeApiReady?: (IFrameAPI: any) => void;
+		SpotifyIframeApi?: any;
 	}
 }
 
@@ -52,6 +53,8 @@ export default function SpotifyEmbed({
 
 		// Register the global ready callback once; create the controller only when we have a non-empty URI
 		globalThis.window.onSpotifyIframeApiReady = (IFrameAPI) => {
+			// Store API globally for reuse
+			globalThis.window.SpotifyIframeApi = IFrameAPI;
 			apiRef.current = IFrameAPI;
 			
 			const currentUri = latestUriRef.current;
@@ -73,6 +76,18 @@ export default function SpotifyEmbed({
 			});
 
 			onTimeUpdate?.(0);
+		};
+
+		// If API is already loaded (e.g., component remounted), use it immediately
+		if (globalThis.window.SpotifyIframeApi && !apiRef.current) {
+			apiRef.current = globalThis.window.SpotifyIframeApi;
+		}
+
+		// Cleanup function to destroy controller on unmount
+		return () => {
+			if (controllerRef.current) {
+				controllerRef.current = null;
+			}
 		};
 	}, []);
 
