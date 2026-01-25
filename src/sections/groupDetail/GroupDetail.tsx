@@ -196,10 +196,7 @@ const ThemeCard = ({ theme: t, isOpen, onToggle, cardRef, groupId, tracksData, i
 																rel="noopener noreferrer"
 																className={styles.trackLink}
 															>
-																<div className={styles.trackInfo}>
-																	<span className={styles.trackName}>{tt.track.name}</span>
-																	{tt.isVariant && <span className={styles.variantBadge}>VARIATION</span>}
-																</div>
+																<span className={styles.trackName}>{tt.track.name}</span>
 																<span className={styles.trackMovie}>{tt.track.movie.name}</span>
 																<span className={styles.trackTime}>
 																	{formatTime(tt.startSecond)} – {formatTime(tt.endSecond)}
