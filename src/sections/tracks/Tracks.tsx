@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import styles from "./Tracks.module.scss";
 import type { TrackThemeRepository } from "../../domain/TrackThemeRepository";
 import { useMovies } from "./useMovies";
@@ -7,6 +8,7 @@ import { useTracksThemes } from "./useTracksThemes";
 import { MovieRepository } from "../../domain/MovieRepository";
 import { TrackRepository } from "../../domain/TrackRepository";
 import SpotifyEmbed from "../../components/SpotifyIFrame";
+import { InfoIcon } from "../../components/icons";
 
 export function Tracks(
 	{
@@ -18,6 +20,10 @@ export function Tracks(
 		readonly trackRepository     : TrackRepository;
 		readonly trackThemeRepository: TrackThemeRepository;
 	}) {
+	// URL path params
+	const { trackId } = useParams<{ trackId?: string }>();
+	const navigate = useNavigate();
+	
 	// State for selections
 	const [selectedMovieId, setSelectedMovieId]   = useState<string | null>(null);
 	const [selectedTrackId, setSelectedTrackId]   = useState<string | null>(null);
@@ -33,6 +39,38 @@ export function Tracks(
 	const { tracks, isLoadingTracksByMovie } = useTracksByMovie(trackRepository, selectedMovieId ?? "");
 	const { tracksThemes, isLoadingThemes }  = useTracksThemes(trackThemeRepository, selectedTrackId ?? "");
 
+	// Auto-select from URL trackId param
+	useEffect(() => {
+		if (!trackId || tracks.length === 0) return;
+		
+		const track = tracks.find(t => t.id === trackId);
+		if (track && selectedTrackId !== trackId) {
+			setSelectedTrackId(trackId);
+			setCurrentUri(track.spotifyURL ?? "");
+			setCurrentSecond(0);
+			setSeconds(-1);
+			setShouldAutoplay(false);
+		}
+	}, [trackId, tracks, selectedTrackId]);
+
+	// Auto-select movie when trackId is in URL (infer from all movies)
+	useEffect(() => {
+		if (!trackId || movies.length === 0 || selectedMovieId) return;
+		
+		// Search for the track across all movies to find its movie
+		const findMovieForTrack = async () => {
+			for (const movie of movies) {
+				const movieTracks = await trackRepository.findByMovieId(movie.id);
+				if (movieTracks.some(t => t.id === trackId)) {
+					setSelectedMovieId(movie.id);
+					break;
+				}
+			}
+		};
+		
+		findMovieForTrack();
+	}, [trackId, movies, selectedMovieId, trackRepository]);
+
 	const formatTime = (secs: number): string => {
 		if (!Number.isFinite(secs) || secs < 0) return "0:00";
 		const total = Math.floor(secs);
@@ -45,6 +83,8 @@ export function Tracks(
 	const handleSelectMovie = (movieId: string) => {
 		setSelectedMovieId(movieId);
 		setSelectedTrackId(null);
+		// Clear trackId from URL when changing movie
+		navigate('/tracks', { replace: true });
 	};
 	const handleSelectTrack = (trackId: string, spotifyURL: string | null) => {
 		setSelectedTrackId(trackId);
@@ -52,6 +92,8 @@ export function Tracks(
 		setCurrentSecond(0);
 		setSeconds(-1);
 		setShouldAutoplay(true);
+		// Update URL with trackId path param
+		navigate(`/tracks/${trackId}`, { replace: true });
 	};
 	const handleSeconds = (secs: number) => {
 		setSeconds(secs);
@@ -234,27 +276,41 @@ export function Tracks(
 														data-idx={idx}
 														>
 														<span className={styles.timeChip}>{start}<span className={styles.dash}>–</span>{end}</span>
-														<button
-															type="button"
-															className={styles.themeItem}
-															aria-label={`Theme ${tt.theme.name}${tt.isVariant ? ' (variant)' : ''}`}
-															aria-pressed={active}
-															onClick={() => {
-																if (tt.track.spotifyURL) {
-																	setCurrentUri(tt.track.spotifyURL);
-																	handleSeconds(tt.startSecond);
-																	setTimeout(() => {
-																		setSeconds(-1);
-																	}, 500);
+														<div className={styles.themeItem}>
+															<button
+																type="button"
+																className={styles.themeItemContent}
+																aria-label={`Theme ${tt.theme.name}${tt.isVariant ? ' (variant)' : ''}`}
+																aria-pressed={active}
+																onClick={() => {
+																	if (tt.track.spotifyURL) {
+																		setCurrentUri(tt.track.spotifyURL);
+																		handleSeconds(tt.startSecond);
+																		setTimeout(() => {
+																			setSeconds(-1);
+																		}, 500);
 
-																	lastActiveIdxRef.current = idx;
-																	setPendingScrollIdx(idx);
-																}
-															}}
-														>
-															<span className={styles.themeName}>{tt.theme.name}</span>
-															{tt.isVariant && <span className={styles.variantBadge}>VARIATION</span>}
-														</button>
+																		lastActiveIdxRef.current = idx;
+																		setPendingScrollIdx(idx);
+																	}
+																}}
+															>
+																<div className={styles.themeItemLeft}>
+																	<span className={styles.themeName}>{tt.theme.name}</span>
+																	{tt.isVariant && <span className={styles.variantBadge}>VARIATION</span>}
+																</div>
+															</button>
+															<Link
+																to={`/themes/${tt.theme.group.id}/${tt.theme.id}`}
+																target="_blank"
+																rel="noopener noreferrer"
+																className={styles.themeInfoButton}
+																aria-label={`View ${tt.theme.name} details in new tab`}
+																title="Theme info"
+															>
+																<InfoIcon size={14} />
+															</Link>
+														</div>
 													</div>
 												);
 											})}

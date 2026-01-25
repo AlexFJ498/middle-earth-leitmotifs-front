@@ -20,11 +20,11 @@ const router = createBrowserRouter([
                 element: GroupsListFactory.create(),
             },
 			{
-				path: "/themes/:groupId",
+				path: "/themes/:groupId/:themeId?",
 				element: GroupDetailFactory.create(),
 			},
 			{
-				path: "/tracks",
+				path: "/tracks/:trackId?",
 				element: TracksFactory.create(),
 			},
             {

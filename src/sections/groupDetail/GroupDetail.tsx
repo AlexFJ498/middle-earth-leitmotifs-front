@@ -7,17 +7,37 @@ import { Theme } from "../../domain/Theme";
 import { useThemesByGroup } from "../groupsList/useThemesByGroup";
 import { MarkdownText } from "../../components/MarkdownText";
 import { TipSpotifySignIn } from "../../components/TipSpotifySignIn";
+import { LinkIcon } from "../../components/icons";
 import styles from "./GroupDetail.module.scss";
 import { getSpotifyEmbedSrc } from "../../components/SpotifyIFrame";
 
-type ThemeCardProps = { theme: Theme; isOpen: boolean; onToggle: () => void };
+type ThemeCardProps = { 
+	theme: Theme; 
+	isOpen: boolean; 
+	onToggle: () => void; 
+	cardRef?: (el: HTMLElement | null) => void;
+	groupId: string;
+};
 
-const ThemeCard = ({ theme: t, isOpen, onToggle }: ThemeCardProps) => {
+const ThemeCard = ({ theme: t, isOpen, onToggle, cardRef, groupId }: ThemeCardProps) => {
 	const contentRef = useRef<HTMLDivElement>(null);
 	const revealRef = useRef<HTMLDivElement>(null);
 	const [maxH, setMaxH] = useState(0);
 	const [isRevealed, setIsRevealed] = useState(false);
     const [isPressed, setIsPressed] = useState(false);
+	const [showCopiedTooltip, setShowCopiedTooltip] = useState(false);
+	
+	const handleCopyLink = async (e: React.MouseEvent) => {
+		e.stopPropagation(); // Prevent theme from toggling
+		const url = `${window.location.origin}/themes/${groupId}/${t.id}`;
+		try {
+			await navigator.clipboard.writeText(url);
+			setShowCopiedTooltip(true);
+			setTimeout(() => setShowCopiedTooltip(false), 2000);
+		} catch (err) {
+			console.error('Failed to copy link:', err);
+		}
+	};
 	
 	useEffect(() => {
 		const el = contentRef.current;
@@ -71,34 +91,50 @@ const ThemeCard = ({ theme: t, isOpen, onToggle }: ThemeCardProps) => {
 	const spotifyEmbedSrc = getSpotifyEmbedSrc(t);
 
 	return (
-		<li className="list-none">
+		<li className="list-none" ref={cardRef}>
 			<div ref={revealRef} className={`${styles.themeReveal} ${isRevealed ? styles.revealed : ""}`}>
 				<div className={`${styles.themeCard} ${isOpen || isPressed ? styles.themeCardOpen : ""} ${isPressed ? styles.themeCardPressed : ""}`}>
-					<button
-						type="button"
-						aria-expanded={isOpen}
-						aria-controls={`desc-${t.id}`}
-						onClick={onToggle}
-						onMouseDown={() => setIsPressed(true)}
-						onMouseUp={() => setIsPressed(false)}
-						onMouseLeave={() => setIsPressed(false)}
-						onTouchStart={() => setIsPressed(true)}
-						onTouchEnd={() => setIsPressed(false)}
-						onTouchCancel={() => setIsPressed(false)}
-						className={styles.themeCardButton}
-					>
-						<div className={`${styles.themeName} ${isOpen || isPressed ? styles.themeNameOpen : ""}`}>{t.name}</div>
-						{t.firstHeard?.movie && (
-							<div className={styles.firstHeard}>
-								<span className="font-semibold not-italic">First Heard:</span> {t.firstHeard?.name} ({t.firstHeard?.movie?.name})
-								<span className={styles.timeChip}>
-									{formatTime(t.firstHeardStart)}
-									<span className={styles.dash}>–</span>
-									{formatTime(t.firstHeardEnd)}
-								</span>
-							</div>
-						)}
-					</button>
+					<div className={styles.themeCardHeader}>
+						<button
+							type="button"
+							aria-expanded={isOpen}
+							aria-controls={`desc-${t.id}`}
+							onClick={onToggle}
+							onMouseDown={() => setIsPressed(true)}
+							onMouseUp={() => setIsPressed(false)}
+							onMouseLeave={() => setIsPressed(false)}
+							onTouchStart={() => setIsPressed(true)}
+							onTouchEnd={() => setIsPressed(false)}
+							onTouchCancel={() => setIsPressed(false)}
+							className={styles.themeCardButton}
+						>
+							<div className={`${styles.themeName} ${isOpen || isPressed ? styles.themeNameOpen : ""}`}>{t.name}</div>
+							{t.firstHeard?.movie && (
+								<div className={styles.firstHeard}>
+									<span className="font-semibold not-italic">First Heard:</span> {t.firstHeard?.name} ({t.firstHeard?.movie?.name})
+									<span className={styles.timeChip}>
+										{formatTime(t.firstHeardStart)}
+										<span className={styles.dash}>–</span>
+										{formatTime(t.firstHeardEnd)}
+									</span>
+								</div>
+							)}
+						</button>
+						<div className={styles.shareButtonWrapper}>
+							<button
+								type="button"
+								onClick={handleCopyLink}
+								className={styles.shareButton}
+								aria-label="Copy link to this theme"
+								title="Copy link to this theme"
+							>
+								<LinkIcon size={16} />
+							</button>
+							{showCopiedTooltip && (
+								<div className={styles.copiedTooltip}>Link copied!</div>
+							)}
+						</div>
+					</div>
 					<div
 						id={`desc-${t.id}`}
 						ref={contentRef}
@@ -136,7 +172,7 @@ export function GroupDetail(
 		themeRepository
 	}: { readonly groupRepository: GroupRepository; readonly themeRepository: ThemeRepository }
 ) {
-	const { groupId } = useParams() as { groupId: string };
+	const { groupId, themeId } = useParams() as { groupId: string; themeId?: string };
 	const memoizedGroupId = useMemo(() => groupId, [groupId]);
 	const { group, isLoadingGroup } = useGroup(groupRepository, memoizedGroupId);
 	const { themes, isLoadingThemesByGroup } = useThemesByGroup(themeRepository, memoizedGroupId);
@@ -145,14 +181,39 @@ export function GroupDetail(
 	const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 	const lastFocusedRef = useRef<HTMLElement | null>(null);
 	const closeBtnRef = useRef<HTMLButtonElement>(null);
+	const themeRefs = useRef<Map<string, HTMLElement>>(new Map());
+	
 	const isExpanded = (id: string) => expanded.has(id);
 	const toggleExpanded = (id: string) => {
 		setExpanded(prev => {
 			const next = new Set(prev);
-			if (next.has(id)) next.delete(id); else next.add(id);
+			if (next.has(id)) next.delete(id);
+			else next.add(id);
 			return next;
 		});
 	};
+
+	useEffect(() => {
+		if (!themeId || isLoadingThemesByGroup) return;
+		
+		const themeExists = themes.some(t => t.id === themeId);
+		if (!themeExists) return;
+
+		setExpanded(prev => {
+			const next = new Set(prev);
+			next.add(themeId);
+			return next;
+		});
+
+		const timer = setTimeout(() => {
+			const element = themeRefs.current.get(themeId);
+			if (element) {
+				element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+			}
+		}, 300);
+
+		return () => clearTimeout(timer);
+	}, [themeId, themes, isLoadingThemesByGroup]);
 
 	useEffect(() => {
 		if (!isImageModalOpen) return;
@@ -207,8 +268,8 @@ export function GroupDetail(
 					<div className={styles.panelInner}>
 						<div className={styles.header}>
 							<button
-								onClick={() => navigate(-1)}
-								aria-label="Back"
+								onClick={() => navigate(`/themes`)}
+								aria-label="Back to themes"
 								className={`${styles.backButton} group justify-self-start`}
 							>
 								<span className="inline-flex items-center gap-2">
@@ -264,7 +325,17 @@ export function GroupDetail(
 									const orderedCategories = Array.from(byCategory.values());
 
 									const renderTheme = (t: Theme) => (
-										<ThemeCard key={t.id} theme={t} isOpen={isExpanded(t.id)} onToggle={() => toggleExpanded(t.id)} />
+										<ThemeCard 
+											key={t.id} 
+											theme={t} 
+											isOpen={isExpanded(t.id)} 
+											onToggle={() => toggleExpanded(t.id)}
+											groupId={groupId}
+											cardRef={(el) => {
+												if (el) themeRefs.current.set(t.id, el);
+												else themeRefs.current.delete(t.id);
+											}}
+										/>
 									);
 
 									return (
