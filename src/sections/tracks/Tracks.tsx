@@ -33,6 +33,7 @@ export function Tracks(
 	const [shouldAutoplay, setShouldAutoplay]     = useState<boolean>(false);
 	const [pendingScrollIdx, setPendingScrollIdx] = useState<number | null>(null);
 	const lastActiveIdxRef                        = useRef<number | null>(null);
+	const isInternalNavigationRef                 = useRef<boolean>(false);
 
 	// Data hooks
 	const { movies, isLoadingMovies }        = useMovies(movieRepository);
@@ -52,6 +53,12 @@ export function Tracks(
 
 	// Auto-select from URL trackId param
 	useEffect(() => {
+		// Skip if this is an internal navigation (from handleSelectTrack)
+		if (isInternalNavigationRef.current) {
+			isInternalNavigationRef.current = false;
+			return;
+		}
+		
 		if (!trackId || tracks.length === 0) return;
 		
 		const track = tracks.find(t => t.id === trackId);
@@ -98,6 +105,9 @@ export function Tracks(
 		navigate('/tracks', { replace: true });
 	};
 	const handleSelectTrack = (trackId: string, spotifyURL: string | null) => {
+		// Mark this as internal navigation to prevent useEffect from re-executing
+		isInternalNavigationRef.current = true;
+		
 		setSelectedTrackId(trackId);
 		setCurrentUri(spotifyURL ?? "");
 		setCurrentSecond(0);
