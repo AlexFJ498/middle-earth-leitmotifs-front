@@ -60,7 +60,7 @@ export function Tracks(
 			setCurrentUri(track.spotifyURL ?? "");
 			setCurrentSecond(0);
 			setSeconds(-1);
-			setShouldAutoplay(false);
+			setShouldAutoplay(true);
 		}
 	}, [trackId, tracks, selectedTrackId]);
 
