@@ -2,18 +2,18 @@ import { useEffect, useState } from "react";
 import { TrackTheme } from "../../domain/TrackTheme";
 import { TrackThemeRepository } from "../../domain/TrackThemeRepository";
 
-export function useTracksThemes(repository: TrackThemeRepository, trackId: string): { tracksThemes: TrackTheme[]; isLoadingThemes: boolean } {
+export function useTracksThemesByTrack(repository: TrackThemeRepository, trackId: string): { tracksThemes: TrackTheme[]; isLoadingTrackThemesByTrack: boolean } {
 	const [tracksThemes, setTracksThemes] = useState<TrackTheme[]>([]);
-	const [isLoadingThemes, setIsLoadingThemes] = useState(true);
+	const [isLoadingTrackThemesByTrack, setIsLoadingTrackThemesByTrack] = useState(true);
 
 	useEffect(() => {
 		if (!trackId) {
 			setTracksThemes([]);
-			setIsLoadingThemes(false);
+			setIsLoadingTrackThemesByTrack(false);
 			return;
 		}
 		
-		setIsLoadingThemes(true);
+		setIsLoadingTrackThemesByTrack(true);
 		repository
 			.findByTrack(trackId)
 			.then((tracksThemes) => {
@@ -24,8 +24,8 @@ export function useTracksThemes(repository: TrackThemeRepository, trackId: strin
 				setTracksThemes([]);
 			})
 			.finally(() => {
-				setIsLoadingThemes(false);
+				setIsLoadingTrackThemesByTrack(false);
 			});
 	}, [repository, trackId]);
-	return { tracksThemes, isLoadingThemes };
+	return { tracksThemes, isLoadingTrackThemesByTrack };
 }

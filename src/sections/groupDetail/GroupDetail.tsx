@@ -2,9 +2,12 @@ import { ThemeRepository } from "../../domain/ThemeRepository";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { useGroup } from "./useGroup";
-import { GroupRepository } from "../../domain/GroupRepository";
-import { Theme } from "../../domain/Theme";
 import { useThemesByGroup } from "../groupsList/useThemesByGroup";
+import { useTracksThemesByTheme } from "./useTracksThemesByTheme";
+import { GroupRepository } from "../../domain/GroupRepository";
+import { TrackThemeRepository } from "../../domain/TrackThemeRepository";
+import { Theme } from "../../domain/Theme";
+import { TrackTheme } from "../../domain/TrackTheme";
 import { MarkdownText } from "../../components/MarkdownText";
 import { TipSpotifySignIn } from "../../components/TipSpotifySignIn";
 import { LinkIcon } from "../../components/icons";
@@ -17,9 +20,12 @@ type ThemeCardProps = {
 	onToggle: () => void; 
 	cardRef?: (el: HTMLElement | null) => void;
 	groupId: string;
+	tracksData: { data: TrackTheme[]; isLoading: boolean; hasLoaded: boolean };
+	isTracksOpen: boolean;
+	onToggleTracks: () => void;
 };
 
-const ThemeCard = ({ theme: t, isOpen, onToggle, cardRef, groupId }: ThemeCardProps) => {
+const ThemeCard = ({ theme: t, isOpen, onToggle, cardRef, groupId, tracksData, isTracksOpen, onToggleTracks }: ThemeCardProps) => {
 	const contentRef = useRef<HTMLDivElement>(null);
 	const revealRef = useRef<HTMLDivElement>(null);
 	const [maxH, setMaxH] = useState(0);
@@ -50,7 +56,7 @@ const ThemeCard = ({ theme: t, isOpen, onToggle, cardRef, groupId }: ThemeCardPr
 				if (el2) setMaxH(el2.scrollHeight);
 			});
 		}
-	}, [t.description, isOpen]);
+	}, [t.description, isOpen, isTracksOpen, tracksData.data.length, tracksData.isLoading]);
 
 	useEffect(() => {
 		const node = revealRef.current;
@@ -158,6 +164,52 @@ const ThemeCard = ({ theme: t, isOpen, onToggle, cardRef, groupId }: ThemeCardPr
 							{t.description && (
 								<MarkdownText className={styles.themeMarkdown} text={t.description} />
 							)}
+							
+							{/* Appears in tracks section */}
+							{isOpen && (
+								<div className={styles.appearsInSection}>
+									<button
+										type="button"
+										onClick={onToggleTracks}
+										className={styles.appearsInButton}
+										aria-expanded={isTracksOpen}
+									>
+										<span className={styles.appearsInIcon}>{isTracksOpen ? '▼' : '▶'}</span>
+										<span>Appears in {tracksData.hasLoaded ? `${tracksData.data.length} track${tracksData.data.length !== 1 ? 's' : ''}` : 'tracks'}</span>
+									</button>
+									
+									{isTracksOpen && (
+										<div className={styles.tracksList}>
+											{tracksData.isLoading && (
+												<div className={styles.tracksLoading}>Loading tracks...</div>
+											)}
+											{!tracksData.isLoading && tracksData.data.length === 0 && (
+												<div className={styles.tracksEmpty}>This theme doesn't appear in any tracks yet.</div>
+											)}
+											{!tracksData.isLoading && tracksData.data.length > 0 && (
+												<ul className={styles.tracksListItems}>
+													{tracksData.data.map((tt) => (
+														<li key={`${tt.track.id}-${tt.startSecond}`} className={styles.trackItem}>
+															<a
+																href={`/tracks/${tt.track.id}`}
+																target="_blank"
+																rel="noopener noreferrer"
+																className={styles.trackLink}
+															>
+																<span className={styles.trackName}>{tt.track.name}</span>
+																<span className={styles.trackMovie}>{tt.track.movie.name}</span>
+																<span className={styles.trackTime}>
+																	{formatTime(tt.startSecond)} – {formatTime(tt.endSecond)}
+																</span>
+															</a>
+														</li>
+													))}
+												</ul>
+											)}
+										</div>
+									)}
+								</div>
+							)}
 						</div>
 					</div>
 				</div>
@@ -169,15 +221,18 @@ const ThemeCard = ({ theme: t, isOpen, onToggle, cardRef, groupId }: ThemeCardPr
 export function GroupDetail(
 	{
 		groupRepository,
-		themeRepository
-	}: { readonly groupRepository: GroupRepository; readonly themeRepository: ThemeRepository }
+		themeRepository,
+		trackThemeRepository,
+	}: { readonly groupRepository: GroupRepository; readonly themeRepository: ThemeRepository; readonly trackThemeRepository: TrackThemeRepository }
 ) {
 	const { groupId, themeId } = useParams() as { groupId: string; themeId?: string };
 	const memoizedGroupId = useMemo(() => groupId, [groupId]);
 	const { group, isLoadingGroup } = useGroup(groupRepository, memoizedGroupId);
 	const { themes, isLoadingThemesByGroup } = useThemesByGroup(themeRepository, memoizedGroupId);
+	const { loadTracksForTheme, getTracksForTheme } = useTracksThemesByTheme(trackThemeRepository);
 	const navigate = useNavigate();
 	const [expanded, setExpanded] = useState<Set<string>>(new Set());
+	const [expandedTracks, setExpandedTracks] = useState<Set<string>>(new Set());
 	const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 	const lastFocusedRef = useRef<HTMLElement | null>(null);
 	const closeBtnRef = useRef<HTMLButtonElement>(null);
@@ -186,6 +241,20 @@ export function GroupDetail(
 	const isExpanded = (id: string) => expanded.has(id);
 	const toggleExpanded = (id: string) => {
 		setExpanded(prev => {
+			const next = new Set(prev);
+			if (next.has(id)) {
+				next.delete(id);
+			} else {
+				next.add(id);
+				loadTracksForTheme(id);
+			}
+			return next;
+		});
+	};
+
+	const isTracksExpanded = (id: string) => expandedTracks.has(id);
+	const toggleTracksExpanded = (id: string) => {
+		setExpandedTracks(prev => {
 			const next = new Set(prev);
 			if (next.has(id)) next.delete(id);
 			else next.add(id);
@@ -205,6 +274,8 @@ export function GroupDetail(
 			return next;
 		});
 
+		loadTracksForTheme(themeId);
+
 		const timer = setTimeout(() => {
 			const element = themeRefs.current.get(themeId);
 			if (element) {
@@ -213,7 +284,7 @@ export function GroupDetail(
 		}, 300);
 
 		return () => clearTimeout(timer);
-	}, [themeId, themes, isLoadingThemesByGroup]);
+	}, [themeId, themes, isLoadingThemesByGroup, loadTracksForTheme]);
 
 	useEffect(() => {
 		if (!isImageModalOpen) return;
@@ -335,6 +406,9 @@ export function GroupDetail(
 												if (el) themeRefs.current.set(t.id, el);
 												else themeRefs.current.delete(t.id);
 											}}
+											tracksData={getTracksForTheme(t.id)}
+											isTracksOpen={isTracksExpanded(t.id)}
+											onToggleTracks={() => toggleTracksExpanded(t.id)}
 										/>
 									);
 

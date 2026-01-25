@@ -28,4 +28,17 @@ export class ApiTrackThemeRepository {
 		const data: TracksThemesResponses[] = await response.json();
 		return data.map(toDomainTrackTheme);
 	}
+
+	async findByTheme(themeId: string) {
+		const response = await fetch(`${this.baseUrl}/themes/${themeId}/tracks`, {
+			headers: { "Content-Type": "application/json" },
+		});
+
+		if (!response.ok) {
+			throw new Error("Error fetching theme tracks");
+		}
+
+		const data: TracksThemesResponses[] = await response.json();
+		return data.map(toDomainTrackTheme);
+	}
 }

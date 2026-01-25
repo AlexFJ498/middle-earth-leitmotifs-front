@@ -4,7 +4,7 @@ import styles from "./Tracks.module.scss";
 import type { TrackThemeRepository } from "../../domain/TrackThemeRepository";
 import { useMovies } from "./useMovies";
 import { useTracksByMovie } from "./useTracksByMovie";
-import { useTracksThemes } from "./useTracksThemes";
+import { useTracksThemesByTrack } from "./useTracksThemesByTrack";
 import { MovieRepository } from "../../domain/MovieRepository";
 import { TrackRepository } from "../../domain/TrackRepository";
 import SpotifyEmbed from "../../components/SpotifyIFrame";
@@ -37,7 +37,7 @@ export function Tracks(
 	// Data hooks
 	const { movies, isLoadingMovies }        = useMovies(movieRepository);
 	const { tracks, isLoadingTracksByMovie } = useTracksByMovie(trackRepository, selectedMovieId ?? "");
-	const { tracksThemes, isLoadingThemes }  = useTracksThemes(trackThemeRepository, selectedTrackId ?? "");
+	const { tracksThemes, isLoadingTrackThemesByTrack }  = useTracksThemesByTrack(trackThemeRepository, selectedTrackId ?? "");
 
 	// Auto-select from URL trackId param
 	useEffect(() => {
@@ -248,7 +248,7 @@ export function Tracks(
 									<div className={styles.emptyBox}>Select a track to view its themes</div>
 								)}
 
-								{selectedTrackId && isLoadingThemes && (
+								{selectedTrackId && isLoadingTrackThemesByTrack && (
 									<div className="grid" style={{ gap: "0.75rem" }}>
 										{Array.from({ length: 5 }).map((_, i) => (
 											<div key={i} className={`${styles.skeleton} ${styles.lineSkeleton}`} style={{ height: "2.25rem" }} />
@@ -256,7 +256,7 @@ export function Tracks(
 									</div>
 								)}
 
-								{selectedTrackId && !isLoadingThemes && (
+								{selectedTrackId && !isLoadingTrackThemesByTrack && (
 									tracksThemes.length === 0 ? (
 										<div className={styles.emptyBox}>No themes found for this track.</div>
 									) : (
