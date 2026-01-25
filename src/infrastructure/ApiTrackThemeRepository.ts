@@ -33,8 +33,8 @@ export class ApiTrackThemeRepository {
 		// Exceptional case: Sauron and The Evil of the Ring are essentially the same theme, but they need
 		// to be treated differently in the Themes section. When fetching tracks for Sauron, we need to use
 		// The Evil of the Ring's ID to actually get the tracks, so they don't get duplicated in the Tracks list.
-		if (themeId === import.meta.env.THE_EVIL_OF_THE_RING_UUID) {
-			themeId = import.meta.env.MORDOR_SAURON_UUID;
+		if (themeId === import.meta.env.VITE_THE_EVIL_OF_THE_RING_UUID) {
+			themeId = import.meta.env.VITE_MORDOR_SAURON_UUID;
 		}
 
 		const response = await fetch(`${this.baseUrl}/themes/${themeId}/tracks`, {
