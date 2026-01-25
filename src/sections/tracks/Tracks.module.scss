@@ -238,7 +238,7 @@
 	align-items          : center;
 	gap                  : 0.5rem;
 	padding              : 0 0.75rem 0 1rem;
-	height               : 3rem;
+	min-height           : 3rem;
 	border-radius        : 0.75rem;
 	border               : 1px solid rgba(191,167,106,0.35);
 	background           : rgba(191,167,106,0.08);
@@ -263,7 +263,7 @@
 	flex           : 1;
 	min-width      : 0;
 	cursor         : pointer;
-	padding        : 0.5rem 0;
+	padding        : 0.75rem 0;
 	justify-content: space-between;
 }
 
@@ -289,6 +289,8 @@
 	white-space       : normal;
 	overflow-wrap     : anywhere;
 	word-break        : break-word;
+	flex              : 1;
+	min-width         : 0;
 }
 .variantBadge {
 	display       : inline-flex;
@@ -338,11 +340,12 @@
 }
 
 .themeItemLeft {
-	display    : flex;
-	align-items: center;
-	gap        : 0.75rem;
-	flex       : 1;
-	min-width  : 0;
+	display       : flex;
+	align-items   : center;
+	gap           : 0.75rem;
+	flex          : 1;
+	min-width     : 0;
+	overflow      : hidden;
 }
 
 .timeChip {
