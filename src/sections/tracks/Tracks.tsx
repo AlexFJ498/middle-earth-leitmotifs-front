@@ -34,6 +34,7 @@ export function Tracks(
 	const [pendingScrollIdx, setPendingScrollIdx] = useState<number | null>(null);
 	const lastActiveIdxRef                        = useRef<number | null>(null);
 	const isInternalNavigationRef                 = useRef<boolean>(false);
+	const tracksScrollRef                         = useRef<HTMLDivElement | null>(null);
 
 	// Data hooks
 	const { movies, isLoadingMovies }        = useMovies(movieRepository);
@@ -68,6 +69,19 @@ export function Tracks(
 			setCurrentSecond(0);
 			setSeconds(-1);
 			setShouldAutoplay(true);
+			
+			// Scroll selected track to top
+			setTimeout(() => {
+				if (tracksScrollRef.current) {
+					const selectedButton = tracksScrollRef.current.querySelector(`[data-track-id="${trackId}"]`);
+					if (selectedButton instanceof HTMLElement) {
+						const containerRect = tracksScrollRef.current.getBoundingClientRect();
+						const buttonRect = selectedButton.getBoundingClientRect();
+						const scrollOffset = buttonRect.top - containerRect.top + tracksScrollRef.current.scrollTop;
+						tracksScrollRef.current.scrollTo({ top: scrollOffset, behavior: 'smooth' });
+					}
+				}
+			}, 100);
 		}
 	}, [trackId, tracks, selectedTrackId]);
 
@@ -115,6 +129,19 @@ export function Tracks(
 		setShouldAutoplay(true);
 		// Update URL with trackId path param
 		navigate(`/tracks/${trackId}`, { replace: true });
+		
+		// Scroll selected track to top
+		setTimeout(() => {
+			if (tracksScrollRef.current) {
+				const selectedButton = tracksScrollRef.current.querySelector(`[data-track-id="${trackId}"]`);
+				if (selectedButton instanceof HTMLElement) {
+					const containerRect = tracksScrollRef.current.getBoundingClientRect();
+					const buttonRect = selectedButton.getBoundingClientRect();
+					const scrollOffset = buttonRect.top - containerRect.top + tracksScrollRef.current.scrollTop;
+					tracksScrollRef.current.scrollTo({ top: scrollOffset, behavior: 'smooth' });
+				}
+			}
+		}, 50);
 	};
 	const handleSeconds = (secs: number) => {
 		setSeconds(secs);
@@ -221,7 +248,7 @@ export function Tracks(
 						{/* Left: tracks list */}
 						<section className={`${styles.pane} ${styles.leftPane}`} aria-label="Tracks list">
 							<div className={styles.tracksHeader}>TRACKS</div>
-							<div className={styles.tracksScroll}>
+						<div className={styles.tracksScroll} ref={tracksScrollRef}>
 								{(!selectedMovieId && !isLoadingTracksByMovie) && (
 									<div className={styles.emptyBox}>Select a movie to see its tracks</div>
 								)}
@@ -242,8 +269,7 @@ export function Tracks(
 													type="button"
 													onClick={() => handleSelectTrack(t.id, t.spotifyURL)}
 													className={`${styles.trackItem} ${selectedTrackId === t.id ? styles.trackItemSelected : ""}`}
-													aria-pressed={selectedTrackId === t.id}
-												>
+													aria-pressed={selectedTrackId === t.id}												data-track-id={t.id}												>
 													<span className={styles.trackName}>{t.name}</span>
 												</button>
 											</li>
