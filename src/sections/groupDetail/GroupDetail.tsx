@@ -240,6 +240,11 @@ export function GroupDetail(
 	
 	const isExpanded = (id: string) => expanded.has(id);
 	const toggleExpanded = (id: string) => {
+		// Clear themeId from URL when manually toggling a theme
+		if (themeId) {
+			navigate(`/themes/${groupId}`, { replace: true });
+		}
+		
 		setExpanded(prev => {
 			const next = new Set(prev);
 			if (next.has(id)) {
