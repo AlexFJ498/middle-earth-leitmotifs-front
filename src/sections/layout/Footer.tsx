@@ -34,6 +34,16 @@ export function Footer() {
             </li>
             <li>
               <a
+                href="mailto:alejfuejur@gmail.com"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center gap-2 text-[var(--color-gold)] hover:text-[var(--color-gold-soft)] transition-colors underline underline-offset-4"
+              >
+                <EmailIcon size={20} className="opacity-90 group-hover:opacity-100" />
+                <span className="hidden sm:inline">Email</span>
+              </a>
+            </li>
+            <li>
+              <a
                 href="https://buymeacoffee.com/alexfj498"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -41,16 +51,6 @@ export function Footer() {
               >
                 <CoffeeIcon size={20} className="opacity-90 group-hover:opacity-100" />
                 <span className="hidden sm:inline">Buy me a coffee</span>
-              </a>
-            </li>
-            <li>
-              <a
-                href="mailto:alejfuejur@gmail.com"
-                rel="noopener noreferrer"
-                className="group inline-flex items-center gap-2 text-[var(--color-gold)] hover:text-[var(--color-gold-soft)] transition-colors underline underline-offset-4"
-              >
-                <EmailIcon size={20} className="opacity-90 group-hover:opacity-100" />
-                <span className="hidden sm:inline">Email</span>
               </a>
             </li>
           </ul>

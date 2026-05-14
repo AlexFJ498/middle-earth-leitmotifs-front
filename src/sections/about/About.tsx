@@ -65,22 +65,22 @@ export function About() {
 										<li>
 											<a
 												className="inline-flex items-center gap-2 underline underline-offset-2 text-[var(--color-gold)] hover:text-[var(--color-gold-soft)]"
+												href="mailto:alejfuejur@gmail.com"
+												rel="noopener noreferrer"
+											>
+												<EmailIcon size={20} className="opacity-90" />
+												Email
+											</a>
+										</li>
+										<li>
+											<a
+												className="inline-flex items-center gap-2 underline underline-offset-2 text-[var(--color-gold)] hover:text-[var(--color-gold-soft)]"
 												href="https://buymeacoffee.com/alexfj498"
 												target="_blank"
 												rel="noopener noreferrer"
 											>
 												<CoffeeIcon size={20} className="opacity-90" />
 												Buy me a coffee
-											</a>
-										</li>
-										<li>
-											<a
-												className="inline-flex items-center gap-2 underline underline-offset-2 text-[var(--color-gold)] hover:text-[var(--color-gold-soft)]"
-												href="mailto:alejfuejur@gmail.com"
-												rel="noopener noreferrer"
-											>
-												<EmailIcon size={20} className="opacity-90" />
-												Email
 											</a>
 										</li>
 									</ul>
