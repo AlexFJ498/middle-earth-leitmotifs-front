@@ -1,4 +1,4 @@
-import { GitHubIcon, LinkedInIcon, EmailIcon } from '../../components/icons';
+import { GitHubIcon, LinkedInIcon, EmailIcon, CoffeeIcon } from '../../components/icons';
 
 export function About() {
 	return (
@@ -60,6 +60,17 @@ export function About() {
 											>
 												<LinkedInIcon size={20} className="opacity-90" />
 												LinkedIn
+											</a>
+										</li>
+										<li>
+											<a
+												className="inline-flex items-center gap-2 underline underline-offset-2 text-[var(--color-gold)] hover:text-[var(--color-gold-soft)]"
+												href="https://buymeacoffee.com/alexfj498"
+												target="_blank"
+												rel="noopener noreferrer"
+											>
+												<CoffeeIcon size={20} className="opacity-90" />
+												Buy me a coffee
 											</a>
 										</li>
 										<li>
