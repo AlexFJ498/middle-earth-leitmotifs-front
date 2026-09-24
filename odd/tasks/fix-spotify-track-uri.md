@@ -25,4 +25,5 @@ Tracks passes a web URL to the Spotify iFrame API's URI-only `loadUri` and `crea
 - Rollback boundary: `src/components/SpotifyIFrame.tsx` and `tests/SpotifyIFrame.test.tsx`.
 - Commit: `7d3060c333ca75fb659d048a0d40933e3cb515ad` (`fix: normalize Spotify track links for iframe API`).
 - RDD assessment: medium risk (`executable_change`), 158 changed lines, `review_due: false` (`under_budget`) against the branch point; no native review started.
-- Next step: publish the branch and create a PR, disclosing existing lint debt and the lack of live Spotify playback verification.
+- Delivery: branch pushed to `origin/codex/fix-spotify-track-uri`; PR #6 is open at https://github.com/AlexFJ498/middle-earth-leitmotifs-front/pull/6. Its description discloses existing lint debt and the lack of live Spotify playback verification.
+- Next step: review the PR and, if needed, verify playback against the live Spotify widget before merging.
