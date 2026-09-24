@@ -24,5 +24,5 @@ Tracks passes a web URL to the Spotify iFrame API's URI-only `loadUri` and `crea
 - Runtime harness: N/A while local build is blocked by the missing dependency; mocked iFrame API calls are covered by Jest.
 - Rollback boundary: `src/components/SpotifyIFrame.tsx` and `tests/SpotifyIFrame.test.tsx`.
 - Commit: `7d3060c333ca75fb659d048a0d40933e3cb515ad` (`fix: normalize Spotify track links for iframe API`).
-- RDD assessment: initial attempt was unassessable because this task file was untracked; reassess after tracking it.
+- RDD assessment: medium risk (`executable_change`), 158 changed lines, `review_due: false` (`under_budget`) against the branch point; no native review started.
 - Next step: restore the missing dependency in an authorized environment, rerun build and targeted verification, then complete review and PR delivery.
