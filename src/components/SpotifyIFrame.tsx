@@ -8,6 +8,27 @@ declare global {
 	}
 }
 
+function toSpotifyTrackUri(value: string): string | null {
+	const input = value.trim();
+	const uriMatch = /^spotify:track:([a-zA-Z0-9]{22})$/.exec(input);
+	if (uriMatch) {
+		return `spotify:track:${uriMatch[1]}`;
+	}
+
+	try {
+		const url = new URL(input);
+		if (url.protocol !== "https:" || url.hostname !== "open.spotify.com") {
+			return null;
+		}
+
+		const pathMatch = /^\/(?:intl-[^/]+\/)?track\/([a-zA-Z0-9]{22})\/?$/.exec(url.pathname);
+
+		return pathMatch ? `spotify:track:${pathMatch[1]}` : null;
+	} catch {
+		return null;
+	}
+}
+
 export default function SpotifyEmbed({
 	uri,
 	onTimeUpdate,
@@ -24,15 +45,16 @@ export default function SpotifyEmbed({
 	const iframeRef     = useRef<HTMLDivElement | null>(null);
 	const controllerRef = useRef<any>(null);
 	const apiRef        = useRef<any>(null);
-	const latestUriRef  = useRef<string>(uri);
+	const trackUri      = toSpotifyTrackUri(uri);
+	const latestUriRef  = useRef<string | null>(trackUri);
 	const hasStartedBool = useRef<boolean>(false);
 
 	// Keep the latest URI in a ref to avoid stale-closure issues
 	useEffect(() => {
-		latestUriRef.current = uri;
+		latestUriRef.current = trackUri;
 		// If a controller already exists and uri changed to a non-empty value, load it
-		if (uri && controllerRef.current) {
-			controllerRef.current.loadUri(uri);
+		if (trackUri && controllerRef.current) {
+			controllerRef.current.loadUri(trackUri);
 			onTimeUpdate?.(0);
 			// If parent requested autoplay, try to play now and notify parent
 			if (autoplay && controllerRef.current) {
@@ -40,7 +62,7 @@ export default function SpotifyEmbed({
 				onAutoplayHandled?.();
 			}
 		}
-	}, [uri]);
+	}, [trackUri]);
 
 	useEffect(() => {
 		const scriptId = "spotify-iframe-api";
@@ -97,10 +119,10 @@ export default function SpotifyEmbed({
 		if (!apiRef.current) return;
 		if (!iframeRef.current) return;
 		if (controllerRef.current) return;
-		if (!uri) return;
+		if (!trackUri) return;
 
 		iframeRef.current.innerHTML = "";
-		const options = { uri, width: "100%", height: "152" };
+		const options = { uri: trackUri, width: "100%", height: "152" };
 		apiRef.current.createController(iframeRef.current, options, (controller: any) => {
 			controllerRef.current = controller;
 			controller.addListener("playback_update", handlePlaybackUpdated);
@@ -108,7 +130,7 @@ export default function SpotifyEmbed({
 		});
 
 		onTimeUpdate?.(0);
-	}, [uri]);
+	}, [trackUri]);
 
 	function handlePlaybackStarted() {
 		hasStartedBool.current = true;
